@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head ('Ticket Logger - Listado de Videojuegos')"></head>
+<head th:replace="fragments/head :: head ('Game Zone - Listado de Videojuegos')"></head>
 <body>
 
 <!-- Incluir el fragmento del header -->
@@ -25,16 +25,16 @@
     </tr>
     </thead>
     <tbody>
-    <tr th:each="videoGame : ${listVideoGames}">
-      <td th:text="${videoGame.id}"></td>
-      <td th:text="${videoGame.name}"></td>
-      <td th:text="${videoGame.studio.name}"></td>
+    <tr th:each="videogame : ${listVideoGames}">
+      <td th:text="${videogame.id}"></td>
+      <td th:text="${videogame.name}"></td>
+      <td th:text="${videogame.studio.name}"></td>
       <td>
         <!-- Botón para editar -->
-        <a th:href="@{/videogames/edit(id=${videoGame.id})}" class="btn btn-primary btn-sm" th:text="#{msg.videogame.edit}"></a>
+        <a th:href="@{/videogames/edit(id=${videogame.id})}" class="btn btn-primary btn-sm" th:text="#{msg.videogame.edit}"></a>
         <!-- Botón para eliminar -->
         <form th:action="@{/videogames/delete}" method="post" class="d-inline">
-          <input type="hidden" name="id" th:value="${videoGame.id}"/>
+          <input type="hidden" name="id" th:value="${videogame.id}"/>
           <button type="submit" class="btn btn-danger btn-sm"
                   th:onclick="return confirm('#{msg.videogame.confirm}');"
                   th:text="#{msg.videogame.delete}">

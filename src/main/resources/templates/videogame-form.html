@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Game Zone - Formulario de Videojuego')"></head>
+<body>
+
+<!-- Incluir el fragmento del header -->
+<header th:replace="fragments/header :: header"></header>
+
+<main class="container mt-5">
+    <h1 th:text="#{msg.videogame.add}"></h1>
+
+    <!-- Muestra un mensaje de error si hay algún problema -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <p th:text="${errorMessage}"></p>
+    </div>
+
+    <form th:action="@{/videogames/save}" th:object="${videogame}" method="post">
+        <div class="form-group">
+            <label for="name" th:text="#{msg.videogame.name}"></label>
+            <input type="text" id="name" name="name" th:field="*{name}" class="form-control" placeholder="Nombre del Videojuego" required />
+        </div>
+
+        <div class="form-group">
+            <label for="studio" th:text="#{msg.videogame.studio}"></label>
+            <select id="studio" name="studio" th:field="*{studio.id}" class="form-control" required>
+                <option value="" th:text="#{msg.studio.select}"></option>
+                <option th:each="studio : ${listStudios}" th:value="${studio.id}" th:text="${studio.name}"></option>
+            </select>
+        </div>
+
+        <div class="form-group mt-3">
+            <button type="submit" class="btn btn-primary" th:text="#{msg.videogame.save}"></button>
+            <a href="#" th:href="@{/videogames}" class="btn btn-secondary ml-2" th:text="#{msg.videogame.returnback}"></a>
+        </div>
+    </form>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>

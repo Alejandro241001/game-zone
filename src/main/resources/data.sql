@@ -1,5 +1,5 @@
 -- Insert data into the studios table
-INSERT INTO studios (name, country) VALUES
+INSERT IGNORE INTO studios (name, country) VALUES
 ('Nintendo', 'Japan'),
 ('FromSoftware', 'Japan'),
 ('Santa Monica Studio', 'United States'),
@@ -9,7 +9,7 @@ INSERT INTO studios (name, country) VALUES
 ('Team Cherry', 'Australia');
 
 -- Insert data into the video_games table
-INSERT INTO video_games (name, studio_id) VALUES
+INSERT IGNORE INTO video_games (name, studio_id) VALUES
 ('The Legend of Zelda: Breath of the Wild', 1),
 ('Elden Ring', 2),
 ('God of War Ragnarok', 3),

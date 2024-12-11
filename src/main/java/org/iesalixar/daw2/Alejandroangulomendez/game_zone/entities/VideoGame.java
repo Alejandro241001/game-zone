@@ -32,7 +32,7 @@ public class VideoGame {
     @JoinColumn(name = "studio_id", nullable = false)
     private Studio studio;
 
-    // Constructor adicional sin `id`
+
     public VideoGame(String name, Studio studio) {
         this.name = name;
         this.studio = studio;
