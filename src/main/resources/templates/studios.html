@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Ticket Logger - Listado de Estudios')"></head>
+<body>
+
+<!-- Incluir el fragmento del header -->
+<header th:replace="fragments/header :: header"></header>
+
+<main class="container mt-5">
+  <h1 th:text="#{msg.studio.title}"></h1>
+
+  <!-- Muestra un mensaje de error si hay algún problema -->
+  <div th:if="${errorMessage}" class="alert alert-danger">
+    <p th:text="${errorMessage}"></p>
+  </div>
+
+  <!-- Muestra la lista de estudios en una tabla -->
+  <table class="table table-bordered mt-3">
+    <thead>
+    <tr>
+      <th th:text="#{msg.studio.id}"></th>
+      <th th:text="#{msg.studio.name}"></th>
+      <th th:text="#{msg.studio.actions}"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="studio : ${listStudios}">
+      <td th:text="${studio.id}"></td>
+      <td th:text="${studio.name}"></td>
+      <td>
+        <!-- Botón para editar -->
+        <a th:href="@{/studios/edit(id=${studio.id})}" class="btn btn-primary btn-sm" th:text="#{msg.studio.edit}"></a>
+        <!-- Botón para eliminar -->
+        <form th:action="@{/studios/delete}" method="post" class="d-inline">
+          <input type="hidden" name="id" th:value="${studio.id}"/>
+          <button type="submit" class="btn btn-danger btn-sm"
+                  th:onclick="return confirm('#{msg.studio.confirm}');"
+                  th:text="#{msg.studio.delete}">
+          </button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <!-- Botón para añadir un nuevo estudio -->
+  <a th:href="@{/studios/new}" class="btn btn-success mt-3" th:text="#{msg.studio.add}"></a>
+
+  <!-- Volver a la página principal -->
+  <a href="#" th:href="@{/}" class="btn btn-secondary mt-3" th:text="#{msg.studio.returnback}"></a>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>
