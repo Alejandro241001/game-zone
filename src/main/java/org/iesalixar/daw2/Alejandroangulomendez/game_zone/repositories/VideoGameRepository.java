@@ -7,5 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface VideoGameRepository extends JpaRepository<VideoGame, Long> {
-    // Aquí puedes agregar métodos de consulta personalizados si los necesitas
+
+
 }
