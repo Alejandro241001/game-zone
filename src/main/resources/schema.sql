@@ -12,3 +12,17 @@ CREATE TABLE IF NOT EXISTS video_games (
     studio_id INT NOT NULL,           -- Foreign key linking to studios table
     FOREIGN KEY (studio_id) REFERENCES studios(id)
 );
+
+-- Crear la tabla 'users'
+CREATE TABLE IF NOT EXISTS users (
+   id BIGINT PRIMARY KEY AUTO_INCREMENT,
+   username VARCHAR(50) UNIQUE NOT NULL,
+   password VARCHAR(100) NOT NULL,
+   enabled BOOLEAN NOT NULL,
+   first_name VARCHAR(50) NOT NULL,
+   last_name VARCHAR(50) NOT NULL,
+   image VARCHAR(255),
+   created_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+   last_modified_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+   last_password_change_date TIMESTAMP
+);
