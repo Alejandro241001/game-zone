@@ -46,8 +46,29 @@
 		</dependency>
 
 
+        <!-- Dependencia para las validaciones de Spring -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
 
-                <dependency>
+
+        <!-- Dependencia par usar variables de entorno -->
+        <dependency>
+            <groupId>io.github.cdimascio</groupId>
+            <artifactId>dotenv-java</artifactId>
+            <version>3.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>RELEASE</version>
+            <scope>compile</scope>
+        </dependency>
+
+
+
+        <dependency>
                     <groupId>org.springframework.boot</groupId>
                     <artifactId>spring-boot-starter-oauth2-client</artifactId>
                 </dependency>
