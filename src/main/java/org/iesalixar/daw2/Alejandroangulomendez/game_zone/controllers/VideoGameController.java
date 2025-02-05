@@ -1,9 +1,9 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.controllers;
 
 import jakarta.validation.Valid;
-import org.iesalixar.daw2.Alejandroangulomendez.dwese_ticket_logger_api.dtos.VideoGameCreateDTO;
-import org.iesalixar.daw2.Alejandroangulomendez.dwese_ticket_logger_api.dtos.VideoGameDTO;
-import org.iesalixar.daw2.Alejandroangulomendez.dwese_ticket_logger_api.services.VideoGameService;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameCreateDTO;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameDTO;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.services.VideoGameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
