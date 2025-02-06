@@ -19,7 +19,7 @@ import java.util.Optional;
  * Controlador que maneja las operaciones CRUD para la entidad `VideoGame`.
  */
 @RestController
-@RequestMapping("/api/video-games")
+@RequestMapping("/api/videogames")
 public class VideoGameController {
 
     private static final Logger logger = LoggerFactory.getLogger(VideoGameController.class);
