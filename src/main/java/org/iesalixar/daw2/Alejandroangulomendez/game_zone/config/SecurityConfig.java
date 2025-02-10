@@ -68,7 +68,7 @@ public class SecurityConfig {
                         ).hasRole("MANAGER") // Solo MANAGER
                         .requestMatchers(
                                 "/api/v1/authenticate",
-                                "/api/v1/register"
+                                "/api/v1/register", "/api/v3/api-docs"
                         ).permitAll() // Endpoints públicos
                         .anyRequest().authenticated() // El resto requiere autenticación
                 )
