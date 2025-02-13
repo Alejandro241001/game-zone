@@ -1,5 +1,11 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.StudioCreateDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.StudioDTO;
@@ -24,6 +30,24 @@ public class StudioController {
     @Autowired
     private StudioService studioService;
 
+    /**
+     * Obtiene todos los estudios almacenados en la base de datos.
+     *
+     * @return Lista de estudios
+     */
+
+    @Operation(summary = "Obtener todas los estudios", description = "Devuelve una lista de todos los estudios" +
+            "disponibles en el sistema")
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de estudios recuperada exitosamente",
+            content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = StudioDTO.class)))),
+
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+
+    })
+
     @GetMapping
     public ResponseEntity<List<StudioDTO>> getAllStudios() {
         logger.info("Solicitando la lista de todos los estudios...");
@@ -36,6 +60,25 @@ public class StudioController {
         }
     }
 
+
+    /**
+     * Obtiene todos los estudios almacenados en la base de datos.
+     *
+     * @id Id de el estudio asociado
+     */
+
+    @Operation(summary = "Obtener todas los estudios", description = "Recupera un estudio" +
+            "específico según su identificador único")
+
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Studio encontrado",
+                    content = @Content(mediaType = "application/json",
+                           schema = @Schema(implementation = StudioDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Estudio no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+
+    })
+
     @GetMapping("/{id}")
     public ResponseEntity<StudioDTO> getStudioById(@PathVariable Long id) {
         logger.info("Buscando estudio con ID {}", id);
@@ -47,6 +90,23 @@ public class StudioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
+    /**
+     * Crea un nuevo estudio
+     * @param studioCreateDTO Datos para crear un estudio
+     * @param locale Idioma par alos mensajes de error
+     * @return Estudio creado o mensaje de error
+     */
+
+    @Operation(summary = "Crear un nuevo estudio", description = "Permite registrar un nuevo estudio en la base de datos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Estudio creado exitosamente",
+            content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = StudioDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos proporcionados"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+
 
     @PostMapping
     public ResponseEntity<?> createStudio(@Valid @RequestBody StudioCreateDTO studioCreateDTO, Locale locale) {
@@ -62,6 +122,23 @@ public class StudioController {
         }
     }
 
+    /**
+     * Actualiza un estudio existente
+     * @param id ID del estudio a actualizar
+     * @param studioCreateDTO Datos de actualización
+     * @param locale Idioma para los mensajes de error
+     * @return Estudio actualizado o mensaje de error
+     */
+
+    @Operation(summary = "Actualizar un estudio", description = "Permite actualizar los datos de un estudio existente ")
+    @ApiResponses(value ={
+            @ApiResponse(responseCode = "200", description = "Estudio actualizado exitosamente",
+            content = @Content(mediaType = "application/json",
+                        schema = @Schema(implementation = StudioDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateStudio(@PathVariable Long id, @Valid @RequestBody StudioCreateDTO studioCreateDTO, Locale locale) {
         try {
@@ -74,6 +151,21 @@ public class StudioController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el estudio");
         }
     }
+
+    /**
+     * Elimina un estudio por su ID
+     *
+     * @param id ID del estudio a eliminar
+     * @return Resultado de la operación
+     */
+
+    @Operation(summary = "Eliminar un estudio", description = "Permite eliminar un estudio específico de la base de datos")
+    @ApiResponses(value ={
+            @ApiResponse(responseCode = "200", description = "Estudio eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Estudio no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteStudio(@PathVariable Long id) {

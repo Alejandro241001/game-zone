@@ -1,8 +1,15 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.controllers;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameCreateDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameDTO;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.services.VideoGameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +39,17 @@ public class VideoGameController {
      *
      * @return ResponseEntity con la lista de videojuegos o un mensaje de error.
      */
+
+    @Operation(summary = "Obtener todos los videojuegos", description = "Devuelve una lista de todos los videojuegos" +
+    "disponibles en el sistema")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de videojuegos recuperada existosamente",
+                content = @Content(mediaType = "application/json",
+                    array = @ArraySchema(schema = @Schema(implementation = VideoGameDTO.class)))),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+
+
     @GetMapping
     public ResponseEntity<List<VideoGameDTO>> getAllVideoGames() {
         logger.info("Solicitando la lista de todos los videojuegos...");
@@ -51,6 +69,21 @@ public class VideoGameController {
      * @param id ID del videojuego.
      * @return ResponseEntity con el videojuego encontrado o un mensaje de error.
      */
+
+    @Operation(summary = "Obtener un videojuego por ID", description = "Recupera un videojuego" +
+    "específica según su identificador único")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Videojuego encontrado",
+                content = @Content(mediaType = "application/json",
+                schema = @Schema(implementation = VideoGameDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Videojuego no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+
+
+
+
+
     @GetMapping("/{id}")
     public ResponseEntity<VideoGameDTO> getVideoGameById(@PathVariable Long id) {
         logger.info("Buscando videojuego con ID {}", id);
@@ -76,6 +109,18 @@ public class VideoGameController {
      * @param locale             Idioma para los mensajes.
      * @return ResponseEntity con el videojuego creado o un mensaje de error.
      */
+
+    @Operation(summary = "Crear un nuevo videojuego", description = "Permite registrar un nuevo videojuego en la base de datos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Videojuego creado exitosamente",
+                content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = VideoGameDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos proporcionados"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+
+
+
     @PostMapping
     public ResponseEntity<?> createVideoGame(@Valid @RequestBody VideoGameCreateDTO videoGameCreateDTO, Locale locale) {
         logger.info("Insertando nuevo videojuego con nombre {}", videoGameCreateDTO.getName());
@@ -99,6 +144,18 @@ public class VideoGameController {
      * @param locale             Idioma para los mensajes.
      * @return ResponseEntity con el videojuego actualizado o un mensaje de error.
      */
+
+    @Operation(summary = "Actualizar un videojuego", description = "Permite actualizar los datos de un videojuego existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Videojuego actualizado exitosamente",
+                content = @Content(mediaType = "application/json",
+                    schema = @Schema(implementation = VideoGameDTO.class))),
+            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+
+
+
     @PutMapping("/{id}")
     public ResponseEntity<?> updateVideoGame(@PathVariable Long id, @Valid @RequestBody VideoGameCreateDTO videoGameCreateDTO, Locale locale) {
         logger.info("Actualizando videojuego con ID {}", id);
@@ -120,6 +177,17 @@ public class VideoGameController {
      * @param id ID del videojuego a eliminar.
      * @return ResponseEntity con el resultado de la operación.
      */
+
+    @Operation(summary = "Eliminar un videojuego", description = "Permite eliminar un videojuego específico de la base de datos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Videojuego eliminado exitosamente"),
+            @ApiResponse(responseCode = "404", description = "Videojuego no encontrado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+
+
+
+
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteVideoGame(@PathVariable Long id) {
         logger.info("Eliminando videojuego con ID {}", id);

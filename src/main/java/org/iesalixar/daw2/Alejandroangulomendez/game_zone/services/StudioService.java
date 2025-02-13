@@ -1,6 +1,7 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.services;
 
 import jakarta.validation.Valid;
+
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.StudioCreateDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.StudioDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.Studio;
@@ -10,8 +11,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import java.awt.print.Pageable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -30,15 +34,16 @@ public class StudioService {
     @Autowired
     private MessageSource messageSource;
 
-    public List<StudioDTO> getAllStudios() {
+    public Page<StudioDTO> getAllStudios(Pageable pageable) {
+       logger.info("Solicitando todas los estudios con paginación: página {}, tamaño {}"),
+            pageable.getNumberOfPages(), pageable.getPageSize());
         try {
-            logger.info("Obteniendo todos los estudios...");
-            List<Studio> studios = studioRepository.findAll();
-            logger.info("Se encontraron {} estudios", studios.size());
-            return studios.stream().map(studioMapper::toDTO).toList();
-        } catch (Exception e) {
-            logger.error("Error al obtener todos los estudios: {}", e.getMessage());
-            throw new RuntimeException("Error al obtener todos los estudios", e);
+            Page<Studio> studios = studioRepository.findAll(pageable);
+            logger.info("Se han encontrado {} estudios en la página actual", studios.getNumberOfElements());
+            return studios.map(studioMapper::toDTO);
+        }catch (Exception e){
+            logger.error("Error al obtener la lista de paginada de estudios: {}", e.getMessage());
+            throw e;
         }
     }
 
