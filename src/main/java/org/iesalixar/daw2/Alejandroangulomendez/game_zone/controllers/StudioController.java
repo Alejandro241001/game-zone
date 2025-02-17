@@ -13,6 +13,9 @@ import org.iesalixar.daw2.Alejandroangulomendez.game_zone.services.StudioService
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -49,10 +52,13 @@ public class StudioController {
     })
 
     @GetMapping
-    public ResponseEntity<List<StudioDTO>> getAllStudios() {
-        logger.info("Solicitando la lista de todos los estudios...");
+    public ResponseEntity<Page<StudioDTO>> getAllStudios(
+       @PageableDefault(size = 10, sort = "name")Pageable pageable
+    ){
+        logger.info("Solicitando todas las regiones con paginación: página {}, tamaño {}",
+                pageable.getPageNumber(), pageable.getPageSize());
         try {
-            List<StudioDTO> studioDTOs = studioService.getAllStudios();
+            Page<StudioDTO> studioDTOs = studioService.getAllStudios(pageable);
             return ResponseEntity.ok(studioDTOs);
         } catch (Exception e) {
             logger.error("Error al listar los estudios: {}", e.getMessage());

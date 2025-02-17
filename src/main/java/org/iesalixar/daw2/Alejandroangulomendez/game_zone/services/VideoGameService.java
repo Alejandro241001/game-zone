@@ -1,8 +1,10 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.services;
 
 import jakarta.validation.Valid;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.StudioDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameCreateDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameDTO;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.Studio;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.mappers.VideoGameMapper;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.VideoGameRepository;
@@ -11,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -39,17 +43,16 @@ public class VideoGameService {
      *
      * @return Lista de objetos `VideoGameDTO` representando todos los videojuegos.
      */
-    public List<VideoGameDTO> getAllVideoGames() {
+    public Page<VideoGameDTO> getAllVideoGames(Pageable pageable) {
+        logger.info("Solicitando todas los estudios con paginación: página {}, tamaño {}",
+                pageable.getPageNumber(), pageable.getPageSize());
         try {
-            logger.info("Obteniendo todos los videojuegos...");
-            List<VideoGame> videoGames = videoGameRepository.findAll();
-            logger.info("Se encontraron {} videojuegos", videoGames.size());
-            return videoGames.stream()
-                    .map(videoGameMapper::toDTO)
-                    .toList();
-        } catch (Exception e) {
-            logger.error("Error al obtener todos los videojuegos: {}", e.getMessage());
-            throw new RuntimeException("Error al obtener todos los videojuegos", e);
+            Page<VideoGame> videogames = videoGameRepository.findAll(pageable);
+            logger.info("Se han encontrado {} estudios en la página actual", videogames.getNumberOfElements());
+            return videogames.map(videoGameMapper::toDTO);
+        }catch (Exception e){
+            logger.error("Error al obtener la lista de paginada de estudios: {}", e.getMessage());
+            throw e;
         }
     }
 

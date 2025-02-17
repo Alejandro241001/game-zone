@@ -12,10 +12,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 
+
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
-import java.awt.print.Pageable;
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -35,8 +36,8 @@ public class StudioService {
     private MessageSource messageSource;
 
     public Page<StudioDTO> getAllStudios(Pageable pageable) {
-       logger.info("Solicitando todas los estudios con paginación: página {}, tamaño {}"),
-            pageable.getNumberOfPages(), pageable.getPageSize());
+       logger.info("Solicitando todas los estudios con paginación: página {}, tamaño {}",
+            pageable.getPageNumber(), pageable.getPageSize());
         try {
             Page<Studio> studios = studioRepository.findAll(pageable);
             logger.info("Se han encontrado {} estudios en la página actual", studios.getNumberOfElements());

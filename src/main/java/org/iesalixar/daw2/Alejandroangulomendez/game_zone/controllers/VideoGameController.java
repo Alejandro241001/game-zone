@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.StudioDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameCreateDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
@@ -14,6 +15,9 @@ import org.iesalixar.daw2.Alejandroangulomendez.game_zone.services.VideoGameServ
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -51,17 +55,20 @@ public class VideoGameController {
 
 
     @GetMapping
-    public ResponseEntity<List<VideoGameDTO>> getAllVideoGames() {
-        logger.info("Solicitando la lista de todos los videojuegos...");
+    public ResponseEntity<Page<VideoGameDTO>> getAllVideigames(
+            @PageableDefault(size = 10, sort = "name") Pageable pageable
+    ){
+        logger.info("Solicitando todas las regiones con paginación: página {}, tamaño {}",
+                pageable.getPageNumber(), pageable.getPageSize());
         try {
-            List<VideoGameDTO> videoGameDTOs = videoGameService.getAllVideoGames();
-            logger.info("Se han encontrado {} videojuegos.", videoGameDTOs.size());
-            return ResponseEntity.ok(videoGameDTOs);
+            Page<VideoGameDTO> videogameDTOs = videoGameService.getAllVideoGames(pageable);
+            return ResponseEntity.ok(videogameDTOs);
         } catch (Exception e) {
-            logger.error("Error al listar los videojuegos: {}", e.getMessage());
+            logger.error("Error al listar los estudios: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
+
 
     /**
      * Obtiene un videojuego específico por su ID.
