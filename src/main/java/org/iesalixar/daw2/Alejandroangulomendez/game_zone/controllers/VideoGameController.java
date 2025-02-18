@@ -55,7 +55,7 @@ public class VideoGameController {
 
 
     @GetMapping
-    public ResponseEntity<Page<VideoGameDTO>> getAllVideigames(
+    public ResponseEntity<Page<VideoGameDTO>> getAllVideogames(
             @PageableDefault(size = 10, sort = "name") Pageable pageable
     ){
         logger.info("Solicitando todas las regiones con paginación: página {}, tamaño {}",
