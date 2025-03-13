@@ -1,7 +1,6 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.services;
 
 import jakarta.validation.Valid;
-
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.StudioCreateDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.StudioDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.Studio;
@@ -11,13 +10,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
-
-
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import org.springframework.data.domain.Pageable;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -36,19 +32,19 @@ public class StudioService {
     private MessageSource messageSource;
 
     public Page<StudioDTO> getAllStudios(Pageable pageable) {
-       logger.info("Solicitando todas los estudios con paginación: página {}, tamaño {}",
-            pageable.getPageNumber(), pageable.getPageSize());
+        logger.info("Solicitando todas los estudios con paginación: página {}, tamaño {}",
+                pageable.getPageNumber(), pageable.getPageSize());
         try {
             Page<Studio> studios = studioRepository.findAll(pageable);
             logger.info("Se han encontrado {} estudios en la página actual", studios.getNumberOfElements());
             return studios.map(studioMapper::toDTO);
-        }catch (Exception e){
+        } catch (Exception e) {
             logger.error("Error al obtener la lista de paginada de estudios: {}", e.getMessage());
             throw e;
         }
     }
 
-    public Optional<StudioDTO> getStudioById(Long id) {
+    public Optional<StudioDTO> getStudioById(Integer id) { // Cambiado de Long a Integer
         try {
             logger.info("Buscando estudio con ID {}", id);
             return studioRepository.findById(id).map(studioMapper::toDTO);
@@ -69,7 +65,7 @@ public class StudioService {
         return studioMapper.toDTO(savedStudio);
     }
 
-    public StudioDTO updateStudio(Long id, @Valid StudioCreateDTO studioCreateDTO, Locale locale) {
+    public StudioDTO updateStudio(Integer id, @Valid StudioCreateDTO studioCreateDTO, Locale locale) { // Cambiado de Long a Integer
         Studio existingStudio = studioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("El estudio no existe"));
 
@@ -84,11 +80,10 @@ public class StudioService {
         return studioMapper.toDTO(updatedStudio);
     }
 
-    public void deleteStudio(Long id) {
+    public void deleteStudio(Integer id) { // Cambiado de Long a Integer
         if (!studioRepository.existsById(id)) {
             throw new IllegalArgumentException("El estudio no existe");
         }
         studioRepository.deleteById(id);
     }
 }
-

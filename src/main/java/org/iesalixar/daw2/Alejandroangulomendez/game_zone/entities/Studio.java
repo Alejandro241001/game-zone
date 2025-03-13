@@ -1,11 +1,9 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities;
 
-
-import jakarta.persistence.*; // Anotaciones de JPA
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-
 import java.util.List;
 
 @Entity
@@ -14,18 +12,15 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"videoGames"}) // Excluir `videoGames` para evitar ciclos recursivos.
-@EqualsAndHashCode(exclude = {"videoGames"}) // Excluir `videoGames` de equals y hashCode para evitar problemas.
-
-
-
-
+@ToString(exclude = {"videoGames"}) // Excluir `videoGames` para evitar ciclos recursivos
+@EqualsAndHashCode(exclude = {"videoGames"}) // Excluir `videoGames` de equals y hashCode
 
 public class Studio {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "id")
+    private Integer id; // Cambiado de Long a Integer para coincidir con INT en schema.sql
 
     @NotEmpty(message = "The studio name cannot be empty.")
     @Size(max = 100, message = "The studio name must not exceed 100 characters.")
@@ -33,10 +28,10 @@ public class Studio {
     private String name;
 
     @Size(max = 50, message = "The country name must not exceed 50 characters.")
-    @Column(name = "country", length = 50)
+    @Column(name = "country", length = 50, nullable = true) // nullable=true para coincidir con schema.sql
     private String country;
 
-    // Relación uno a muchos: Un estudio puede tener muchos videojuegos.
+    // Relación uno a muchos: Un estudio puede tener muchos videojuegos
     @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<VideoGame> videoGames;
 
@@ -45,5 +40,4 @@ public class Studio {
         this.name = name;
         this.country = country;
     }
-
 }
