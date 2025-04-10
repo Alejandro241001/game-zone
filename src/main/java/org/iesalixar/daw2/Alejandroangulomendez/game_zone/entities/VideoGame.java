@@ -1,21 +1,19 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities;
 
-import jakarta.persistence.*; // Anotaciones de JPA
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import java.util.List;
 
 @Entity
-@Table(name = "video_games") // Nombre de la tabla en la base de datos
+@Table(name = "video_games")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"studio"}) // Excluir `studio` para evitar ciclos recursivos.
-@EqualsAndHashCode(exclude = {"studio"}) // Excluir `studio` de equals y hashCode.
-
-
-
+@ToString(exclude = {"studio", "genres"})
+@EqualsAndHashCode(exclude = {"studio", "genres"})
 public class VideoGame {
 
     @Id
@@ -27,10 +25,22 @@ public class VideoGame {
     @Column(name = "name", nullable = false, length = 100)
     private String name;
 
-    // Relación con Studio: Muchos videojuegos pertenecen a un único estudio.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "studio_id", nullable = false)
     private Studio studio;
+
+    @ManyToMany
+    @JoinTable(
+            name = "video_games_genres",
+            joinColumns = @JoinColumn(name = "video_game_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id")
+    )
+    private List<Genre> genres;
+
+
+    @Lob
+    @Column(name = "description")
+    private String description;  // Aquí agregamos la propiedad description
 
 
     public VideoGame(String name, Studio studio) {

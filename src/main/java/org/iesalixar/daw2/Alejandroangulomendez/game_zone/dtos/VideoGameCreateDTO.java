@@ -14,6 +14,11 @@ public class VideoGameCreateDTO {
     @Size(max = 100, message = "{msg.videogame.name.size}")
     private String name;
 
+
+    @NotEmpty(message = "{msg.videogame.description.notEmpty}") // Validación de la descripción
+    @Size(max = 255, message = "{msg.videogame.description.size}")
+    private String description; // Agregar campo descripción
+
     /**
      * El ID del estudio al que pertenece el videojuego.
      *

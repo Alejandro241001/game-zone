@@ -47,5 +47,5 @@ public interface VideoGameRepository extends JpaRepository<VideoGame, Long> {
      * @param id el ID del videojuego.
      * @return un Optional con el videojuego si existe, o vacío si no se encuentra.
      */
-    Optional<VideoGame> findById(Long id);
+    Optional<VideoGame>findById(Long id);
 }

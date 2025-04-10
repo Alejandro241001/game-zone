@@ -1,5 +1,4 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.controllers;
-
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,7 +20,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -120,14 +118,11 @@ public class VideoGameController {
     @Operation(summary = "Crear un nuevo videojuego", description = "Permite registrar un nuevo videojuego en la base de datos")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Videojuego creado exitosamente",
-                content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = VideoGameDTO.class))),
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = VideoGameDTO.class))),
             @ApiResponse(responseCode = "400", description = "Datos inválidos proporcionados"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-
-
-
     @PostMapping
     public ResponseEntity<?> createVideoGame(@Valid @RequestBody VideoGameCreateDTO videoGameCreateDTO, Locale locale) {
         logger.info("Insertando nuevo videojuego con nombre {}", videoGameCreateDTO.getName());
@@ -143,26 +138,14 @@ public class VideoGameController {
         }
     }
 
-    /**
-     * Actualiza un videojuego existente.
-     *
-     * @param id                 ID del videojuego a actualizar.
-     * @param videoGameCreateDTO DTO con los datos actualizados.
-     * @param locale             Idioma para los mensajes.
-     * @return ResponseEntity con el videojuego actualizado o un mensaje de error.
-     */
-
     @Operation(summary = "Actualizar un videojuego", description = "Permite actualizar los datos de un videojuego existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Videojuego actualizado exitosamente",
-                content = @Content(mediaType = "application/json",
-                    schema = @Schema(implementation = VideoGameDTO.class))),
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = VideoGameDTO.class))),
             @ApiResponse(responseCode = "400", description = "Datos inválidos"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-
-
-
     @PutMapping("/{id}")
     public ResponseEntity<?> updateVideoGame(@PathVariable Long id, @Valid @RequestBody VideoGameCreateDTO videoGameCreateDTO, Locale locale) {
         logger.info("Actualizando videojuego con ID {}", id);
@@ -177,6 +160,7 @@ public class VideoGameController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar el videojuego.");
         }
     }
+
 
     /**
      * Elimina un videojuego por su ID.

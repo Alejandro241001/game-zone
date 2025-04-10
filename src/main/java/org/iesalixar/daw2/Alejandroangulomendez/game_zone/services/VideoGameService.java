@@ -1,10 +1,7 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.services;
-
 import jakarta.validation.Valid;
-import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.StudioDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameCreateDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameDTO;
-import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.Studio;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.mappers.VideoGameMapper;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.VideoGameRepository;
@@ -17,7 +14,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -38,31 +34,20 @@ public class VideoGameService {
     @Autowired
     private MessageSource messageSource;
 
-    /**
-     * Obtiene todos los videojuegos de la base de datos y los convierte a DTOs.
-     *
-     * @return Lista de objetos `VideoGameDTO` representando todos los videojuegos.
-     */
     public Page<VideoGameDTO> getAllVideoGames(Pageable pageable) {
-        logger.info("Solicitando todas los estudios con paginación: página {}, tamaño {}",
+        logger.info("Solicitando todos los videojuegos con paginación: página {}, tamaño {}",
                 pageable.getPageNumber(), pageable.getPageSize());
         try {
             Page<VideoGame> videogames = videoGameRepository.findAll(pageable);
-            logger.info("Se han encontrado {} estudios en la página actual", videogames.getNumberOfElements());
+            logger.info("Se han encontrado {} videojuegos en la página actual", videogames.getNumberOfElements());
             return videogames.map(videoGameMapper::toDTO);
-        }catch (Exception e){
-            logger.error("Error al obtener la lista de paginada de estudios: {}", e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error al obtener la lista paginada de videojuegos: {}", e.getMessage());
             throw e;
         }
     }
 
-    /**
-     * Busca un videojuego específico por su ID.
-     *
-     * @param id Identificador único del videojuego.
-     * @return Un Optional que contiene un `VideoGameDTO` si el videojuego existe.
-     */
-    public Optional<VideoGameDTO> getVideoGameById(Long id) {
+    public Optional<VideoGameDTO> getVideoGameById(Long id) {  // Cambié Integer por Long
         try {
             logger.info("Buscando videojuego con ID {}", id);
             return videoGameRepository.findById(id).map(videoGameMapper::toDTO);
@@ -72,44 +57,23 @@ public class VideoGameService {
         }
     }
 
-    /**
-     * Crea un nuevo videojuego en la base de datos.
-     *
-     * @param videoGameCreateDTO DTO que contiene los datos del videojuego a crear.
-     * @param locale             Idioma para los mensajes de error.
-     * @return DTO del videojuego creado.
-     */
     public VideoGameDTO createVideoGame(@Valid VideoGameCreateDTO videoGameCreateDTO, Locale locale) {
-        // Verificar si el nombre del videojuego ya existe
         if (videoGameRepository.existsByName(videoGameCreateDTO.getName())) {
             String errorMessage = messageSource.getMessage("msg.videogame-controller.insert.nameExist", null, locale);
             throw new IllegalArgumentException(errorMessage);
         }
 
-        // Verificar si el estudio existe
-        if (!studioRepository.existsById(videoGameCreateDTO.getStudioId())) {
+        if (!studioRepository.existsById(videoGameCreateDTO.getStudioId().intValue())) {
             String errorMessage = messageSource.getMessage("msg.videogame-controller.insert.studioNotExist", null, locale);
             throw new IllegalArgumentException(errorMessage);
         }
 
-        // Convertir el DTO a entidad VideoGame (ya se maneja el estudio en el mapper)
         VideoGame videoGame = videoGameMapper.toEntity(videoGameCreateDTO);
-
-        // Guardar el videojuego
         VideoGame savedVideoGame = videoGameRepository.save(videoGame);
 
-        // Devolver el DTO del videojuego guardado
         return videoGameMapper.toDTO(savedVideoGame);
     }
 
-    /**
-     * Actualiza un videojuego existente.
-     *
-     * @param id                 Identificador del videojuego a actualizar.
-     * @param videoGameCreateDTO DTO que contiene los nuevos datos del videojuego.
-     * @param locale             Idioma para los mensajes de error.
-     * @return DTO del videojuego actualizado.
-     */
     public VideoGameDTO updateVideoGame(Long id, @Valid VideoGameCreateDTO videoGameCreateDTO, Locale locale) {
         VideoGame existingVideoGame = videoGameRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("El videojuego no existe"));
@@ -119,14 +83,14 @@ public class VideoGameService {
             throw new IllegalArgumentException(errorMessage);
         }
 
-        // Verificar si el estudio existe
-        if (!studioRepository.existsById(videoGameCreateDTO.getStudioId())) {
+        if (!studioRepository.existsById(videoGameCreateDTO.getStudioId().intValue())) {
             String errorMessage = messageSource.getMessage("msg.videogame-controller.update.studioNotExist", null, locale);
             throw new IllegalArgumentException(errorMessage);
         }
 
         existingVideoGame.setName(videoGameCreateDTO.getName());
-        existingVideoGame.setStudio(studioRepository.findById(videoGameCreateDTO.getStudioId()).orElseThrow(() ->
+        existingVideoGame.setDescription(videoGameCreateDTO.getDescription()); // Establecer descripción
+        existingVideoGame.setStudio(studioRepository.findById(videoGameCreateDTO.getStudioId().intValue()).orElseThrow(() ->
                 new IllegalArgumentException("El estudio no existe"))
         );
         VideoGame updatedVideoGame = videoGameRepository.save(existingVideoGame);
@@ -134,13 +98,8 @@ public class VideoGameService {
         return videoGameMapper.toDTO(updatedVideoGame);
     }
 
-    /**
-     * Elimina un videojuego específico por su ID.
-     *
-     * @param id Identificador único del videojuego.
-     * @throws IllegalArgumentException Si el videojuego no existe.
-     */
-    public void deleteVideoGame(Long id) {
+
+    public void deleteVideoGame(Long id) {  // Cambié Integer por Long
         if (!videoGameRepository.existsById(id)) {
             throw new IllegalArgumentException("El videojuego no existe");
         }
