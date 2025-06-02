@@ -25,26 +25,13 @@ public class VideoGameMapper {
         return dto;
     }
 
-    public VideoGame toEntity(VideoGameDTO dto) {
-        VideoGame videoGame = new VideoGame();
-        videoGame.setId(dto.getId());
-        videoGame.setName(dto.getName());
-        videoGame.setDescription(dto.getDescription());
-
-        Studio studio = new Studio();
-        studio.setId(dto.getStudio().getId());
-        videoGame.setStudio(studio);
-
-        return videoGame;
-    }
-
     public VideoGame toEntity(VideoGameCreateDTO createDTO) {
         VideoGame videoGame = new VideoGame();
         videoGame.setName(createDTO.getName());
         videoGame.setDescription(createDTO.getDescription());
 
         Studio studio = new Studio();
-        studio.setId(createDTO.getStudioId().intValue());
+        studio.setId((long) createDTO.getStudioId().intValue());
         videoGame.setStudio(studio);
 
         return videoGame;

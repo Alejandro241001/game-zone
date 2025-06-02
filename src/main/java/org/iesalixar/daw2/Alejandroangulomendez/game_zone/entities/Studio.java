@@ -20,7 +20,7 @@ public class Studio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Integer id; // Cambiado de Long a Integer para coincidir con INT en schema.sql
+    private Long id; // Cambiado de Long a Integer para coincidir con INT en schema.sql
 
     @NotEmpty(message = "The studio name cannot be empty.")
     @Size(max = 100, message = "The studio name must not exceed 100 characters.")

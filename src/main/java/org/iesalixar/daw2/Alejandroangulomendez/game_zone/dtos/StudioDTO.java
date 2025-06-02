@@ -19,7 +19,7 @@ public class StudioDTO {
     /**
      * Identificador único del estudio.
      */
-    private Integer id; // Ajustado a Integer para coincidir con schema.sql
+    private Long id; // Ajustado a Integer para coincidir con schema.sql
 
     /**
      * Nombre del estudio de videojuegos.

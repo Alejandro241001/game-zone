@@ -12,7 +12,7 @@ import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.Genre;
 @Setter
 public class GenreDTO {
 
-    private Integer id;
+    private Long id;
 
     @Size(max = 100, message = "The genre name must not exceed 100 characters.")
     private String name;

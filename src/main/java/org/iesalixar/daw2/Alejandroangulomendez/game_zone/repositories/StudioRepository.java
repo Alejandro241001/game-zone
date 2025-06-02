@@ -34,7 +34,7 @@ public interface StudioRepository extends JpaRepository<Studio, Integer> {
      *
      * @param id el ID del estudio a eliminar.
      */
-    void deleteById(Integer id);
+    void deleteById(Long id);
 
     /**
      * Obtiene un estudio por su ID.
@@ -42,7 +42,7 @@ public interface StudioRepository extends JpaRepository<Studio, Integer> {
      * @param id el ID del estudio.
      * @return un Optional que contiene el estudio si se encuentra, o vacío si no se encuentra.
      */
-    Optional<Studio> findById(Integer id);
+    Optional<Studio> findById(Long id);
 
     /**
      * Comprueba si existe un estudio con un nombre específico.
