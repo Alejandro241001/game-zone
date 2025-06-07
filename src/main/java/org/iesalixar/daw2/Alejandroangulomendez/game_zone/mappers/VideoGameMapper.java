@@ -22,6 +22,10 @@ public class VideoGameMapper {
         studioDTO.setName(videoGame.getStudio().getName());
         dto.setStudio(studioDTO);
 
+        // Añadimos los nuevos campos
+        dto.setMetacritic(videoGame.getMetacritic());
+        dto.setReleaseYear(videoGame.getReleaseYear());
+
         return dto;
     }
 
@@ -31,8 +35,12 @@ public class VideoGameMapper {
         videoGame.setDescription(createDTO.getDescription());
 
         Studio studio = new Studio();
-        studio.setId((long) createDTO.getStudioId().intValue());
+        studio.setId(createDTO.getStudioId());
         videoGame.setStudio(studio);
+
+        // Añadimos los nuevos campos
+        videoGame.setMetacritic(createDTO.getMetacritic());
+        videoGame.setReleaseYear(createDTO.getReleaseYear());
 
         return videoGame;
     }

@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS video_games (
     name VARCHAR(100) NOT NULL,             -- Nombre del videojuego
     studio_id INT NOT NULL,                 -- Clave foránea al estudio
     description TEXT,                       -- Descripción del juego
-    metacritic_score DECIMAL(4,1),          -- Puntuación de Metacritic (ej. 85.5)
+    metacritic DECIMAL(4,1),          -- Puntuación de Metacritic (ej. 85.5)
     release_year INT,                       -- Año de lanzamiento
     FOREIGN KEY (studio_id) REFERENCES studios(id) ON DELETE CASCADE
 );

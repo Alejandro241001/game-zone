@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+
+import java.math.BigDecimal;
 import java.util.List;
 
 @Entity
@@ -42,6 +44,13 @@ public class VideoGame {
     @Column(name = "description")
     private String description;  // Aquí agregamos la propiedad description
 
+    // Nuevo campo metacritic
+    @Column(name = "metacritic")
+    private BigDecimal metacritic;
+
+    // Nuevo campo releaseYear
+    @Column(name = "release_year")
+    private Long releaseYear;
 
     public VideoGame(String name, Studio studio) {
         this.name = name;

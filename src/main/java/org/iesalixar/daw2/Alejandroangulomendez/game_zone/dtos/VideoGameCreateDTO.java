@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Getter
 @Setter
 public class VideoGameCreateDTO {
@@ -27,4 +29,10 @@ public class VideoGameCreateDTO {
      */
     @NotNull(message = "{msg.videogame.studio.notNull}")
     private Long studioId;  // Referencia al ID del estudio al que pertenece el videojuego
+
+    @NotNull(message = "{msg.videogame.metacritic.notNull}")
+    private BigDecimal metacritic;
+
+    @NotNull(message = "{msg.videogame.releaseYear.notNull}")
+    private Long releaseYear;
 }

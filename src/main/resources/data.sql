@@ -32,7 +32,7 @@ INSERT IGNORE INTO studios (id, name, country) VALUES
 (30, 'Annapurna Interactive', 'United States');
 
 -- Insert data into the video_games table (15 registros adicionales, total 30)
-INSERT IGNORE INTO video_games (id, name, studio_id, description, metacritic_score, release_year) VALUES
+INSERT IGNORE INTO video_games (id, name, studio_id, description, metacritic, release_year) VALUES
 (1, 'The Legend of Zelda: Breath of the Wild', 1, 'Un juego de mundo abierto con Link explorando Hyrule.', 97.0, 2017),
 (2, 'Elden Ring', 2, 'Un RPG de acción en un mundo abierto creado con George R.R. Martin.', 96.0, 2022),
 (3, 'God of War Ragnarok', 3, 'La continuación épica de Kratos y Atreus en la mitología nórdica.', 94.0, 2022),
