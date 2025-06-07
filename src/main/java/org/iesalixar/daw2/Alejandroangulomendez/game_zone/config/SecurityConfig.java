@@ -59,7 +59,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sin sesiones
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/videogames").hasAnyRole("USER", "MANAGER") // Solo USER
+                        .requestMatchers("/api/videogames/**").hasAnyRole("USER", "MANAGER") // Solo USER
                         .requestMatchers("/api/admin").hasRole("ADMIN") // Solo ADMIN
                         .requestMatchers(
                                 "/api/studios"
