@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 @Getter
 @Setter
@@ -16,23 +17,19 @@ public class VideoGameCreateDTO {
     @Size(max = 100, message = "{msg.videogame.name.size}")
     private String name;
 
-
-    @NotEmpty(message = "{msg.videogame.description.notEmpty}") // Validación de la descripción
+    @NotEmpty(message = "{msg.videogame.description.notEmpty}")
     @Size(max = 255, message = "{msg.videogame.description.size}")
-    private String description; // Agregar campo descripción
+    private String description;
 
-    /**
-     * El ID del estudio al que pertenece el videojuego.
-     *
-     * - Debe ser un objeto válido.
-     * - Este campo no puede ser nulo.
-     */
     @NotNull(message = "{msg.videogame.studio.notNull}")
-    private Long studioId;  // Referencia al ID del estudio al que pertenece el videojuego
+    private Long studioId;
 
     @NotNull(message = "{msg.videogame.metacritic.notNull}")
     private BigDecimal metacritic;
 
     @NotNull(message = "{msg.videogame.releaseYear.notNull}")
     private Long releaseYear;
+
+    // NUEVO: IDs de plataformas asociadas
+    private Set<Long> platformIds;
 }

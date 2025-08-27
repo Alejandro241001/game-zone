@@ -1,12 +1,15 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities;
 
+
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "video_games")
@@ -14,8 +17,8 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = {"studio", "genres"})
-@EqualsAndHashCode(exclude = {"studio", "genres"})
+@ToString(exclude = {"studio", "genres", "platforms"})
+@EqualsAndHashCode(exclude = {"studio", "genres", "platforms"})
 public class VideoGame {
 
     @Id
@@ -39,22 +42,27 @@ public class VideoGame {
     )
     private List<Genre> genres;
 
-
     @Lob
     @Column(name = "description")
-    private String description;  // Aquí agregamos la propiedad description
+    private String description;  // Descripción del videojuego
 
-    // Nuevo campo metacritic
     @Column(name = "metacritic")
     private BigDecimal metacritic;
 
-    // Nuevo campo releaseYear
     @Column(name = "release_year")
     private Long releaseYear;
+
+    // 👇 Relación con plataformas añadida
+    @ManyToMany
+    @JoinTable(
+            name = "video_games_platforms",
+            joinColumns = @JoinColumn(name = "video_game_id"),
+            inverseJoinColumns = @JoinColumn(name = "platform_id")
+    )
+    private Set<Platform> platforms = new HashSet<>();
 
     public VideoGame(String name, Studio studio) {
         this.name = name;
         this.studio = studio;
     }
-
 }

@@ -5,9 +5,10 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
-import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.Studio;
-
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Clase DTO (Data Transfer Object) que representa un videojuego.
@@ -29,6 +30,9 @@ public class VideoGameDTO {
 
     private Long releaseYear;   // Nuevo campo releaseYear
 
+    private List<PlatformDTO> platforms; // <-- añadimos plataformas
+
+
     /**
      * Convierte una entidad VideoGame a un DTO.
      *
@@ -37,17 +41,26 @@ public class VideoGameDTO {
      */
     public static VideoGameDTO fromEntity(VideoGame videoGame) {
         if (videoGame == null) return null;
+
         VideoGameDTO dto = new VideoGameDTO();
         dto.setId(videoGame.getId());
         dto.setName(videoGame.getName());
         dto.setDescription(videoGame.getDescription());
-        dto.setMetacritic(videoGame.getMetacritic());    // Mapeo nuevo campo
-        dto.setReleaseYear(videoGame.getReleaseYear());  // Mapeo nuevo campo
+        dto.setMetacritic(videoGame.getMetacritic());
+        dto.setReleaseYear(videoGame.getReleaseYear());
 
-        StudioDTO studioDTO = StudioDTO.fromEntity(videoGame.getStudio());
-        dto.setStudio(studioDTO);
+        // Mapeo del estudio
+        dto.setStudio(StudioDTO.fromEntity(videoGame.getStudio()));
+
+        // Mapeo de plataformas
+        if (videoGame.getPlatforms() != null) {
+            List<PlatformDTO> platformDTOs = videoGame.getPlatforms()
+                    .stream()
+                    .map(PlatformDTO::fromEntity) // se asume que PlatformDTO tiene un método fromEntity
+                    .collect(Collectors.toList());
+            dto.setPlatforms(platformDTOs);
+        }
 
         return dto;
     }
-
 }

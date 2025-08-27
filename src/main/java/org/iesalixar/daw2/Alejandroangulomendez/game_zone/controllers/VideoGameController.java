@@ -6,23 +6,20 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
-import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.StudioDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameCreateDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameDTO;
-import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.services.VideoGameService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 import java.util.Locale;
-import java.util.Optional;
 
 /**
  * Controlador que maneja las operaciones CRUD para la entidad `VideoGame`.
@@ -36,85 +33,60 @@ public class VideoGameController {
     @Autowired
     private VideoGameService videoGameService;
 
-    /**
-     * Lista todos los videojuegos.
-     *
-     * @return ResponseEntity con la lista de videojuegos o un mensaje de error.
-     */
-
-    @Operation(summary = "Obtener todos los videojuegos", description = "Devuelve una lista de todos los videojuegos" +
-    "disponibles en el sistema")
+    // ===========================================
+    // GET: Todos los videojuegos con plataformas
+    // ===========================================
+    @Operation(summary = "Obtener todos los videojuegos", description = "Devuelve una lista de todos los videojuegos con sus plataformas")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Lista de videojuegos recuperada existosamente",
-                content = @Content(mediaType = "application/json",
-                    array = @ArraySchema(schema = @Schema(implementation = VideoGameDTO.class)))),
+                    content = @Content(mediaType = "application/json",
+                            array = @ArraySchema(schema = @Schema(implementation = VideoGameDTO.class)))),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-
-
     @GetMapping
-    public ResponseEntity<Page<VideoGameDTO>> getAllVideogames(
-            @PageableDefault(size = 10, sort = "name") Pageable pageable
-    ){
-        logger.info("Solicitando todas las regiones con paginación: página {}, tamaño {}",
-                pageable.getPageNumber(), pageable.getPageSize());
+    public ResponseEntity<List<VideoGameDTO>> getAllVideogames() {
+        logger.info("Solicitando todos los videojuegos con plataformas");
         try {
-            Page<VideoGameDTO> videogameDTOs = videoGameService.getAllVideoGames(pageable);
+            // Usamos Pageable.unpaged() para obtener todos sin paginación
+            List<VideoGameDTO> videogameDTOs = videoGameService.getAllVideoGames(PageRequest.of(0, Integer.MAX_VALUE))
+                    .toList();
             return ResponseEntity.ok(videogameDTOs);
         } catch (Exception e) {
-            logger.error("Error al listar los estudios: {}", e.getMessage());
+            logger.error("Error al listar los videojuegos: {}", e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
-
-    /**
-     * Obtiene un videojuego específico por su ID.
-     *
-     * @param id ID del videojuego.
-     * @return ResponseEntity con el videojuego encontrado o un mensaje de error.
-     */
-
-    @Operation(summary = "Obtener un videojuego por ID", description = "Recupera un videojuego" +
-    "específica según su identificador único")
+    // ===========================================
+    // GET: Videojuego por ID con plataformas
+    // ===========================================
+    @Operation(summary = "Obtener un videojuego por ID", description = "Recupera un videojuego con sus plataformas por ID")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Videojuego encontrado",
-                content = @Content(mediaType = "application/json",
-                schema = @Schema(implementation = VideoGameDTO.class))),
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = VideoGameDTO.class))),
             @ApiResponse(responseCode = "404", description = "Videojuego no encontrado"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-
-
-
-
-
     @GetMapping("/{id}")
     public ResponseEntity<VideoGameDTO> getVideoGameById(@PathVariable Long id) {
         logger.info("Buscando videojuego con ID {}", id);
         try {
-            Optional<VideoGameDTO> videoGameDTO = videoGameService.getVideoGameById(id);
-            if (videoGameDTO.isPresent()) {
-                logger.info("Videojuego con ID {} encontrado.", id);
-                return ResponseEntity.ok(videoGameDTO.get());
-            } else {
-                logger.warn("No se encontró ningún videojuego con ID {}", id);
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-            }
+            VideoGameDTO videoGameDTO = videoGameService.getVideoGameById(id)
+                    .orElseThrow(() -> new IllegalArgumentException("VideoGame not found"));
+            return ResponseEntity.ok(videoGameDTO);
+        } catch (IllegalArgumentException e) {
+            logger.warn("No se encontró el videojuego con ID {}: {}", id, e.getMessage());
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
         } catch (Exception e) {
             logger.error("Error al buscar el videojuego con ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 
-    /**
-     * Inserta un nuevo videojuego en la base de datos.
-     *
-     * @param videoGameCreateDTO DTO con los datos del nuevo videojuego.
-     * @param locale             Idioma para los mensajes.
-     * @return ResponseEntity con el videojuego creado o un mensaje de error.
-     */
-
+    // ===========================================
+    // POST: Crear videojuego
+    // ===========================================
     @Operation(summary = "Crear un nuevo videojuego", description = "Permite registrar un nuevo videojuego en la base de datos")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "Videojuego creado exitosamente",
@@ -138,6 +110,9 @@ public class VideoGameController {
         }
     }
 
+    // ===========================================
+    // PUT: Actualizar videojuego
+    // ===========================================
     @Operation(summary = "Actualizar un videojuego", description = "Permite actualizar los datos de un videojuego existente")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Videojuego actualizado exitosamente",
@@ -161,24 +136,15 @@ public class VideoGameController {
         }
     }
 
-
-    /**
-     * Elimina un videojuego por su ID.
-     *
-     * @param id ID del videojuego a eliminar.
-     * @return ResponseEntity con el resultado de la operación.
-     */
-
+    // ===========================================
+    // DELETE: Eliminar videojuego
+    // ===========================================
     @Operation(summary = "Eliminar un videojuego", description = "Permite eliminar un videojuego específico de la base de datos")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Videojuego eliminado exitosamente"),
             @ApiResponse(responseCode = "404", description = "Videojuego no encontrado"),
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
-
-
-
-
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteVideoGame(@PathVariable Long id) {
         logger.info("Eliminando videojuego con ID {}", id);
