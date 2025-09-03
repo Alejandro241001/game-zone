@@ -1,19 +1,13 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.HashSet;
 import java.util.Set;
 
-@Setter
-@Getter
 @Entity
 @Table(name = "platforms")
 public class Platform {
 
-    // Getters y Setters
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -24,11 +18,35 @@ public class Platform {
     @ManyToMany(mappedBy = "platforms")
     private Set<VideoGame> videoGames = new HashSet<>();
 
-    // Constructores
+    // --- Constructores ---
     public Platform() {}
 
     public Platform(String name) {
         this.name = name;
     }
 
+    // --- Getters y Setters ---
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Set<VideoGame> getVideoGames() {
+        return videoGames;
+    }
+
+    public void setVideoGames(Set<VideoGame> videoGames) {
+        this.videoGames = videoGames;
+    }
 }

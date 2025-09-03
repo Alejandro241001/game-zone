@@ -4,7 +4,6 @@ package org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
-import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.HashSet;
@@ -13,12 +12,6 @@ import java.util.Set;
 
 @Entity
 @Table(name = "video_games")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString(exclude = {"studio", "genres", "platforms"})
-@EqualsAndHashCode(exclude = {"studio", "genres", "platforms"})
 public class VideoGame {
 
     @Id
@@ -44,7 +37,7 @@ public class VideoGame {
 
     @Lob
     @Column(name = "description")
-    private String description;  // Descripción del videojuego
+    private String description;
 
     @Column(name = "metacritic")
     private BigDecimal metacritic;
@@ -52,7 +45,6 @@ public class VideoGame {
     @Column(name = "release_year")
     private Long releaseYear;
 
-    // 👇 Relación con plataformas añadida
     @ManyToMany
     @JoinTable(
             name = "video_games_platforms",
@@ -61,8 +53,88 @@ public class VideoGame {
     )
     private Set<Platform> platforms = new HashSet<>();
 
+    // Relación con reviews
+    @OneToMany(mappedBy = "videoGame", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Review> reviews = new HashSet<>();
+
+    // --- Constructores ---
+    public VideoGame() {}
+
     public VideoGame(String name, Studio studio) {
         this.name = name;
         this.studio = studio;
+    }
+
+    // --- Getters y Setters ---
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public Studio getStudio() {
+        return studio;
+    }
+
+    public void setStudio(Studio studio) {
+        this.studio = studio;
+    }
+
+    public List<Genre> getGenres() {
+        return genres;
+    }
+
+    public void setGenres(List<Genre> genres) {
+        this.genres = genres;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public BigDecimal getMetacritic() {
+        return metacritic;
+    }
+
+    public void setMetacritic(BigDecimal metacritic) {
+        this.metacritic = metacritic;
+    }
+
+    public Long getReleaseYear() {
+        return releaseYear;
+    }
+
+    public void setReleaseYear(Long releaseYear) {
+        this.releaseYear = releaseYear;
+    }
+
+    public Set<Platform> getPlatforms() {
+        return platforms;
+    }
+
+    public void setPlatforms(Set<Platform> platforms) {
+        this.platforms = platforms;
+    }
+
+    public Set<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(Set<Review> reviews) {
+        this.reviews = reviews;
     }
 }

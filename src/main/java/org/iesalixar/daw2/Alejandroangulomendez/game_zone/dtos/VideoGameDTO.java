@@ -1,18 +1,14 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos;
 
-
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
+
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
-/**
- * Clase DTO (Data Transfer Object) que representa un videojuego.
- */
 @Getter
 @Setter
 public class VideoGameDTO {
@@ -22,23 +18,18 @@ public class VideoGameDTO {
     @Size(max = 100, message = "The video game name must not exceed 100 characters.")
     private String name;
 
-    private StudioDTO studio; // Relación con StudioDTO
+    private StudioDTO studio;
 
     private String description;
 
-    private BigDecimal metacritic;    // Nuevo campo metacritic
+    private BigDecimal metacritic;
 
-    private Long releaseYear;   // Nuevo campo releaseYear
+    private Long releaseYear;
 
-    private List<PlatformDTO> platforms; // <-- añadimos plataformas
+    private List<PlatformDTO> platforms;
 
+    private List<ReviewDTO> reviews; // <-- añadido para reviews
 
-    /**
-     * Convierte una entidad VideoGame a un DTO.
-     *
-     * @param videoGame La entidad VideoGame a convertir.
-     * @return Un nuevo VideoGameDTO con los datos de la entidad.
-     */
     public static VideoGameDTO fromEntity(VideoGame videoGame) {
         if (videoGame == null) return null;
 
@@ -56,9 +47,18 @@ public class VideoGameDTO {
         if (videoGame.getPlatforms() != null) {
             List<PlatformDTO> platformDTOs = videoGame.getPlatforms()
                     .stream()
-                    .map(PlatformDTO::fromEntity) // se asume que PlatformDTO tiene un método fromEntity
+                    .map(PlatformDTO::fromEntity)
                     .collect(Collectors.toList());
             dto.setPlatforms(platformDTOs);
+        }
+
+        // Mapeo de reviews
+        if (videoGame.getReviews() != null) {
+            List<ReviewDTO> reviewDTOs = videoGame.getReviews()
+                    .stream()
+                    .map(ReviewDTO::fromEntity) // se asume que ReviewDTO tiene fromEntity
+                    .collect(Collectors.toList());
+            dto.setReviews(reviewDTOs);
         }
 
         return dto;

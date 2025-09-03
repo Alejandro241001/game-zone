@@ -1,6 +1,5 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories;
 
-
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,12 +14,13 @@ public interface VideoGameRepository extends JpaRepository<VideoGame, Long> {
 
     boolean existsByName(String name);
 
+    // Incluye plataformas y estudio en todas las páginas
     @EntityGraph(attributePaths = {"platforms", "studio"})
-    Page<VideoGame> findAll(Pageable pageable); // Incluye plataformas y estudio
+    Page<VideoGame> findAll(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"platforms", "studio"})
-    Optional<VideoGame> findById(Long id); // Incluye plataformas y estudio
+    // ✅ Incluye plataformas, estudio y reviews cuando buscamos por ID
+    @EntityGraph(attributePaths = {"platforms", "studio", "reviews"})
+    Optional<VideoGame> findById(Long id);
 
-    // Cambiado a la convención correcta
     boolean existsVideoGameByNameAndIdNot(String name, Long id);
 }
