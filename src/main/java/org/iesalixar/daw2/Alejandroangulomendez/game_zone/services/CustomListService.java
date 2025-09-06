@@ -5,9 +5,11 @@ import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.CustomListCreateD
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.CustomListDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.CustomList;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.User;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.mappers.CustomListMapper;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.CustomListRepository;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.UserRepository;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.VideoGameRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +25,9 @@ public class CustomListService {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private VideoGameRepository videoGameRepository;
 
     // 1) Listado paginado
     public Page<CustomListDTO> getAllCustomLists(Pageable pageable) {
@@ -74,5 +79,19 @@ public class CustomListService {
             throw new IllegalArgumentException("La lista no existe");
         }
         customListRepository.deleteById(id);
+    }
+
+    // 6) Añadir un videojuego a una lista personalizada
+    public CustomListDTO addVideoGameToList(Long listId, Long videoGameId) {
+        CustomList customList = customListRepository.findById(listId)
+                .orElseThrow(() -> new IllegalArgumentException("La lista no existe"));
+
+        VideoGame videoGame = videoGameRepository.findById(videoGameId)
+                .orElseThrow(() -> new IllegalArgumentException("El videojuego no existe"));
+
+        customList.getVideoGames().add(videoGame);
+        CustomList saved = customListRepository.save(customList);
+
+        return CustomListMapper.toDTO(saved);
     }
 }

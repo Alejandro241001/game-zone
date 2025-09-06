@@ -24,7 +24,7 @@ import java.util.Locale;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/custom-lists")
+@RequestMapping("/api/customlists")
 public class CustomListController {
 
     private static final Logger logger = LoggerFactory.getLogger(CustomListController.class);
@@ -161,6 +161,36 @@ public class CustomListController {
         } catch (Exception e) {
             logger.error("Error al eliminar la lista con ID {}: {}", id, e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la lista personalizada");
+        }
+    }
+    /**
+     * Añade un videojuego a una lista personalizada existente.
+     *
+     * @param listId ID de la lista.
+     * @param videoGameId ID del videojuego.
+     * @return Lista actualizada.
+     */
+    @Operation(summary = "Añadir un videojuego a una lista personalizada", description = "Permite agregar un videojuego a una lista existente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Videojuego añadido exitosamente",
+                    content = @Content(mediaType = "application/json",
+                            schema = @Schema(implementation = CustomListDTO.class))),
+            @ApiResponse(responseCode = "404", description = "Lista o videojuego no encontrado"),
+            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
+            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
+    })
+    @PostMapping("/{listId}/videogames/{videoGameId}")
+    public ResponseEntity<?> addVideoGameToCustomList(@PathVariable Long listId, @PathVariable Long videoGameId) {
+        try {
+            CustomListDTO updatedList = customListService.addVideoGameToList(listId, videoGameId);
+            return ResponseEntity.ok(updatedList);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (Exception e) {
+            logger.error("Error al añadir el videojuego a la lista personalizada: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al añadir el videojuego a la lista");
         }
     }
 }
