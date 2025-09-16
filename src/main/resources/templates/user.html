@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Game Zone - Listado de Usuarios')"></head>
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="container mt-5">
+  <h1 th:text="#{msg.user.title}"></h1>
+
+  <div th:if="${errorMessage}" class="alert alert-danger">
+    <p th:text="${errorMessage}"></p>
+  </div>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+    <tr>
+      <th th:text="#{msg.user.id}"></th>
+      <th th:text="#{msg.user.username}"></th>
+      <th th:text="#{msg.user.firstName}"></th>
+      <th th:text="#{msg.user.lastName}"></th>
+      <th th:text="#{msg.user.enabled}"></th>
+      <th th:text="#{msg.user.roles}"></th>
+      <th th:text="#{msg.user.actions}"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="user : ${listUser}">
+      <td th:text="${user.id}"></td>
+      <td th:text="${user.username}"></td>
+      <td th:text="${user.firstName}"></td>
+      <td th:text="${user.lastName}"></td>
+      <td th:text="${user.enabled}"></td>
+      <td th:text="${user.roles.stream().map(r -> r.name).collect(joining(', '))}"></td>
+      <td>
+        <a th:href="@{/user/edit(id=${user.id})}" class="btn btn-primary btn-sm" th:text="#{msg.user.edit}"></a>
+        <form th:action="@{/user/delete}" method="post" class="d-inline">
+          <input type="hidden" name="id" th:value="${user.id}" />
+          <button type="submit" class="btn btn-danger btn-sm"
+                  th:onclick="return confirm('#{msg.user.confirm}');"
+                  th:text="#{msg.user.delete}">
+          </button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <a th:href="@{/user/new}" class="btn btn-success mt-3" th:text="#{msg.user.add}"></a>
+  <a href="#" th:href="@{/}" class="btn btn-secondary mt-3" th:text="#{msg.user.returnback}"></a>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

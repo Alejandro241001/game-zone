@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Game Zone - Formulario de Rol')"></head>
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="container mt-5">
+  <h1 th:text="#{msg.role.add}"></h1>
+
+  <div th:if="${errorMessage}" class="alert alert-danger">
+    <p th:text="${errorMessage}"></p>
+  </div>
+
+  <form th:action="@{/role/save}" th:object="${role}" method="post">
+    <div class="form-group">
+      <label for="name" th:text="#{msg.role.name}"></label>
+      <input type="text" id="name" name="name" th:field="*{name}" class="form-control" required />
+    </div>
+
+    <div class="form-group mt-3">
+      <button type="submit" class="btn btn-primary" th:text="#{msg.role.save}"></button>
+      <a href="#" th:href="@{/role}" class="btn btn-secondary ml-2" th:text="#{msg.role.returnback}"></a>
+    </div>
+  </form>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

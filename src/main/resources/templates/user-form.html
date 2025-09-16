@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Game Zone - Formulario de Usuario')"></head>
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="container mt-5">
+  <h1 th:text="#{msg.user.add}"></h1>
+
+  <div th:if="${errorMessage}" class="alert alert-danger">
+    <p th:text="${errorMessage}"></p>
+  </div>
+
+  <form th:action="@{/user/save}" th:object="${user}" method="post">
+    <div class="form-group">
+      <label for="username" th:text="#{msg.user.username}"></label>
+      <input type="text" id="username" name="username" th:field="*{username}" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+      <label for="firstName" th:text="#{msg.user.firstName}"></label>
+      <input type="text" id="firstName" name="firstName" th:field="*{firstName}" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+      <label for="lastName" th:text="#{msg.user.lastName}"></label>
+      <input type="text" id="lastName" name="lastName" th:field="*{lastName}" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+      <label for="password" th:text="#{msg.user.password}"></label>
+      <input type="password" id="password" name="password" th:field="*{password}" class="form-control" th:required="${#fields.hasErrors('id')}" />
+    </div>
+
+    <div class="form-group">
+      <label for="enabled" th:text="#{msg.user.enabled}"></label>
+      <select id="enabled" name="enabled" th:field="*{enabled}" class="form-control">
+        <option th:value="true" th:text="#{msg.user.enabledTrue}"></option>
+        <option th:value="false" th:text="#{msg.user.enabledFalse}"></option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label th:text="#{msg.user.roles}"></label>
+      <div th:each="role : ${listRoles}" class="form-check">
+        <input type="checkbox" th:value="${role.id}" th:field="*{roles}" class="form-check-input" />
+        <label th:text="${role.name}" class="form-check-label"></label>
+      </div>
+    </div>
+
+    <div class="form-group mt-3">
+      <button type="submit" class="btn btn-primary" th:text="#{msg.user.save}"></button>
+      <a href="#" th:href="@{/user}" class="btn btn-secondary ml-2" th:text="#{msg.user.returnback}"></a>
+    </div>
+  </form>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>
