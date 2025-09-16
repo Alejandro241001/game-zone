@@ -1,42 +1,54 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head th:replace="fragments/head :: head ('Game Zone - Formulario de Videojuego')"></head>
+<head th:replace="fragments/head :: head ('Game Zone - #{msg.videogame.form.title}')"></head>
 <body>
 
-<!-- Incluir el fragmento del header -->
 <header th:replace="fragments/header :: header"></header>
 
 <main class="container mt-5">
-    <h1 th:text="#{msg.videogame.add}"></h1>
+    <h1 th:text="${videogame.id != null ? #{msg.videogame.edit} : #{msg.videogame.add}}"></h1>
 
-    <!-- Muestra un mensaje de error si hay algún problema -->
     <div th:if="${errorMessage}" class="alert alert-danger">
         <p th:text="${errorMessage}"></p>
     </div>
 
-    <form th:action="@{/videogames/save}" th:object="${videogame}" method="post">
+    <form th:action="@{/videogame/save}" th:object="${videogame}" method="post">
+        <input type="hidden" th:field="*{id}" />
+
         <div class="form-group">
-            <label for="name" th:text="#{msg.videogame.name}"></label>
-            <input type="text" id="name" name="name" th:field="*{name}" class="form-control" placeholder="Nombre del Videojuego" required />
+            <label for="title" th:text="#{msg.videogame.title}"></label>
+            <input type="text" id="title" th:field="*{title}" class="form-control"
+                   th:placeholder="#{msg.videogame.title.placeholder}" required />
         </div>
 
         <div class="form-group">
             <label for="studio" th:text="#{msg.videogame.studio}"></label>
-            <select id="studio" name="studio" th:field="*{studio.id}" class="form-control" required>
-                <option value="" th:text="#{msg.studio.select}"></option>
-                <option th:each="studio : ${listStudios}" th:value="${studio.id}" th:text="${studio.name}"></option>
+            <select id="studio" th:field="*{studio.id}" class="form-control">
+                <option th:each="studio : ${listStudios}"
+                        th:value="${studio.id}"
+                        th:text="${studio.name}">
+                </option>
             </select>
+        </div>
+
+        <div class="form-group">
+            <label for="releaseDate" th:text="#{msg.videogame.releaseDate}"></label>
+            <input type="date" id="releaseDate" th:field="*{releaseDate}" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label for="description" th:text="#{msg.videogame.description}"></label>
+            <textarea id="description" th:field="*{description}" class="form-control" rows="4"
+                      th:placeholder="#{msg.videogame.description.placeholder}"></textarea>
         </div>
 
         <div class="form-group mt-3">
             <button type="submit" class="btn btn-primary" th:text="#{msg.videogame.save}"></button>
-            <a href="#" th:href="@{/videogames}" class="btn btn-secondary ml-2" th:text="#{msg.videogame.returnback}"></a>
+            <a th:href="@{/videogame}" class="btn btn-secondary ml-2" th:text="#{msg.videogame.returnback}"></a>
         </div>
     </form>
 </main>
 
-<!-- Incluir el fragmento del footer -->
 <footer th:replace="fragments/footer :: footer"></footer>
-
 </body>
 </html>

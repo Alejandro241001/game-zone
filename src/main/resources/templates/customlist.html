@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Game Zone - Listado de Listas Personalizadas')"></head>
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="container mt-5">
+  <h1>Listas personalizadas</h1>
+
+  <div th:if="${errorMessage}" class="alert alert-danger">
+    <p th:text="${errorMessage}"></p>
+  </div>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+    <tr>
+      <th>ID</th>
+      <th>Nombre</th>
+      <th>Usuario</th>
+      <th>Acciones</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="list : ${customLists}">
+      <td th:text="${list.id}"></td>
+      <td th:text="${list.name}"></td>
+      <td th:text="${list.user.username}"></td>
+      <td>
+        <a th:href="@{/customlists/edit(id=${list.id})}" class="btn btn-primary btn-sm">Editar</a>
+        <form th:action="@{/customlists/delete}" method="post" class="d-inline">
+          <input type="hidden" name="id" th:value="${list.id}" />
+          <button type="submit" class="btn btn-danger btn-sm"
+                  th:onclick="return confirm('¿Seguro que quieres eliminar esta lista?');">Eliminar</button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <a th:href="@{/customlists/new}" class="btn btn-success mt-3">Nueva Lista</a>
+  <a th:href="@{/}" class="btn btn-secondary mt-3">Volver</a>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Game Zone - Listado de Reseñas')"></head>
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="container mt-5">
+  <h1 th:text="#{msg.review.title}"></h1>
+
+  <div th:if="${errorMessage}" class="alert alert-danger">
+    <p th:text="${errorMessage}"></p>
+  </div>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+    <tr>
+      <th th:text="#{msg.review.id}"></th>
+      <th th:text="#{msg.review.user}"></th>
+      <th th:text="#{msg.review.videogame}"></th>
+      <th th:text="#{msg.review.text}"></th>
+      <th th:text="#{msg.review.rating}"></th>
+      <th th:text="#{msg.review.date}"></th>
+      <th th:text="#{msg.review.actions}"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="review : ${listReview}">
+      <td th:text="${review.id}"></td>
+      <td th:text="${review.user.username}"></td>
+      <td th:text="${review.videoGame.title}"></td>
+      <td th:text="${review.reviewText}"></td>
+      <td th:text="${review.rating}"></td>
+      <td th:text="${#dates.format(review.createdDate, 'dd/MM/yyyy HH:mm')}"></td>
+      <td>
+        <a th:href="@{/review/edit(id=${review.id})}" class="btn btn-primary btn-sm" th:text="#{msg.review.edit}"></a>
+        <form th:action="@{/review/delete}" method="post" class="d-inline">
+          <input type="hidden" name="id" th:value="${review.id}"/>
+          <button type="submit" class="btn btn-danger btn-sm"
+                  th:onclick="return confirm('#{msg.review.confirm}');"
+                  th:text="#{msg.review.delete}">
+          </button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <a th:href="@{/review/new}" class="btn btn-success mt-3" th:text="#{msg.review.add}"></a>
+  <a href="#" th:href="@{/}" class="btn btn-secondary mt-3" th:text="#{msg.review.returnback}"></a>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>

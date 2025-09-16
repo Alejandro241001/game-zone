@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Game Zone - Formulario de Reseña')"></head>
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="container mt-5">
+  <h1 th:text="#{msg.review.add}"></h1>
+
+  <div th:if="${errorMessage}" class="alert alert-danger">
+    <p th:text="${errorMessage}"></p>
+  </div>
+
+  <form th:action="@{/review/save}" th:object="${review}" method="post">
+    <div class="form-group">
+      <label for="user" th:text="#{msg.review.user}"></label>
+      <select id="user" name="user" th:field="*{user}" class="form-control" required>
+        <option th:each="user : ${listUsers}" th:value="${user.id}" th:text="${user.username}"></option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="videoGame" th:text="#{msg.review.videogame}"></label>
+      <select id="videoGame" name="videoGame" th:field="*{videoGame}" class="form-control" required>
+        <option th:each="game : ${listVideoGames}" th:value="${game.id}" th:text="${game.title}"></option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="reviewText" th:text="#{msg.review.text}"></label>
+      <textarea id="reviewText" name="reviewText" th:field="*{reviewText}" class="form-control" placeholder="Escribe tu reseña" rows="4"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="rating" th:text="#{msg.review.rating}"></label>
+      <input type="number" id="rating" name="rating" th:field="*{rating}" class="form-control" min="0" max="10" step="0.1" required />
+    </div>
+
+    <div class="form-group mt-3">
+      <button type="submit" class="btn btn-primary" th:text="#{msg.review.save}"></button>
+      <a href="#" th:href="@{/review}" class="btn btn-secondary ml-2" th:text="#{msg.review.returnback}"></a>
+    </div>
+  </form>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>

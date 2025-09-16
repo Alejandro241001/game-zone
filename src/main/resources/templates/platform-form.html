@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Game Zone - Formulario de Plataforma')"></head>
+<body>
+
+<!-- Incluir el fragmento del header -->
+<header th:replace="fragments/header :: header"></header>
+
+<main class="container mt-5">
+  <h1 th:text="#{msg.platform.add}"></h1>
+
+  <!-- Muestra un mensaje de error si hay algún problema -->
+  <div th:if="${errorMessage}" class="alert alert-danger">
+    <p th:text="${errorMessage}"></p>
+  </div>
+
+  <form th:action="@{/platform/save}" th:object="${platform}" method="post">
+    <div class="form-group">
+      <label for="name" th:text="#{msg.platform.name}"></label>
+      <input type="text" id="name" name="name" th:field="*{name}" class="form-control" placeholder="Nombre de la Plataforma" required />
+    </div>
+
+    <div class="form-group mt-3">
+      <button type="submit" class="btn btn-primary" th:text="#{msg.platform.save}"></button>
+      <a href="#" th:href="@{/platform}" class="btn btn-secondary ml-2" th:text="#{msg.platform.returnback}"></a>
+    </div>
+  </form>
+</main>
+
+<!-- Incluir el fragmento del footer -->
+<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>

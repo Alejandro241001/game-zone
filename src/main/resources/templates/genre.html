@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="fragments/head :: head ('Game Zone - Listado de Géneros')"></head>
+<body>
+
+<header th:replace="fragments/header :: header"></header>
+
+<main class="container mt-5">
+  <h1 th:text="#{msg.genre.title}"></h1>
+
+  <div th:if="${errorMessage}" class="alert alert-danger">
+    <p th:text="${errorMessage}"></p>
+  </div>
+
+  <table class="table table-bordered mt-3">
+    <thead>
+    <tr>
+      <th th:text="#{msg.genre.id}"></th>
+      <th th:text="#{msg.genre.name}"></th>
+      <th th:text="#{msg.genre.actions}"></th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="genre : ${listGenre}">
+      <td th:text="${genre.id}"></td>
+      <td th:text="${genre.name}"></td>
+      <td>
+        <a th:href="@{/genre/edit(id=${genre.id})}" class="btn btn-primary btn-sm" th:text="#{msg.genre.edit}"></a>
+        <form th:action="@{/genre/delete}" method="post" class="d-inline">
+          <input type="hidden" name="id" th:value="${genre.id}"/>
+          <button type="submit" class="btn btn-danger btn-sm"
+                  th:onclick="return confirm('#{msg.genre.confirm}');"
+                  th:text="#{msg.genre.delete}">
+          </button>
+        </form>
+      </td>
+    </tr>
+    </tbody>
+  </table>
+
+  <a th:href="@{/genre/new}" class="btn btn-success mt-3" th:text="#{msg.genre.add}"></a>
+  <a href="#" th:href="@{/}" class="btn btn-secondary mt-3" th:text="#{msg.genre.returnback}"></a>
+</main>
+
+<footer th:replace="fragments/footer :: footer"></footer>
+
+</body>
+</html>
