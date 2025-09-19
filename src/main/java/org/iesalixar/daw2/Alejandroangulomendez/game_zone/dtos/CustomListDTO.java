@@ -12,6 +12,6 @@ public class CustomListDTO {
     private Long id;
     private String name;
     private LocalDateTime createdDate;
-    private Long userId; // 👈 solo guardamos el ID del usuario
+    private Long userId;
     private List<VideoGameDTO> videoGames;
 }

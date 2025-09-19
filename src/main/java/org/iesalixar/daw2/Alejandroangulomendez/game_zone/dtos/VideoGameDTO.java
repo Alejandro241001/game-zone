@@ -28,39 +28,5 @@ public class VideoGameDTO {
 
     private List<PlatformDTO> platforms;
 
-    private List<ReviewDTO> reviews; // <-- añadido para reviews
-
-    public static VideoGameDTO fromEntity(VideoGame videoGame) {
-        if (videoGame == null) return null;
-
-        VideoGameDTO dto = new VideoGameDTO();
-        dto.setId(videoGame.getId());
-        dto.setName(videoGame.getName());
-        dto.setDescription(videoGame.getDescription());
-        dto.setMetacritic(videoGame.getMetacritic());
-        dto.setReleaseYear(videoGame.getReleaseYear());
-
-        // Mapeo del estudio
-        dto.setStudio(StudioDTO.fromEntity(videoGame.getStudio()));
-
-        // Mapeo de plataformas
-        if (videoGame.getPlatforms() != null) {
-            List<PlatformDTO> platformDTOs = videoGame.getPlatforms()
-                    .stream()
-                    .map(PlatformDTO::fromEntity)
-                    .collect(Collectors.toList());
-            dto.setPlatforms(platformDTOs);
-        }
-
-        // Mapeo de reviews
-        if (videoGame.getReviews() != null) {
-            List<ReviewDTO> reviewDTOs = videoGame.getReviews()
-                    .stream()
-                    .map(ReviewDTO::fromEntity) // se asume que ReviewDTO tiene fromEntity
-                    .collect(Collectors.toList());
-            dto.setReviews(reviewDTOs);
-        }
-
-        return dto;
-    }
+    private List<ReviewDTO> reviews;
 }

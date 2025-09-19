@@ -3,12 +3,18 @@ package org.iesalixar.daw2.Alejandroangulomendez.game_zone.mappers;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.CustomListDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.CustomList;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.stream.Collectors;
 
+@Component
 public class CustomListMapper {
 
-    public static CustomListDTO toDTO(CustomList cl) {
+    @Autowired
+    private VideoGameMapper videoGameMapper;
+
+    public CustomListDTO toDTO(CustomList cl) {
         if (cl == null) return null;
 
         CustomListDTO dto = new CustomListDTO();
@@ -23,7 +29,7 @@ public class CustomListMapper {
         if (cl.getVideoGames() != null) {
             dto.setVideoGames(
                     cl.getVideoGames().stream()
-                            .map(VideoGameDTO::fromEntity)
+                            .map(videoGameMapper::toDTO) // ✅ Usamos el mapper
                             .collect(Collectors.toList())
             );
         }

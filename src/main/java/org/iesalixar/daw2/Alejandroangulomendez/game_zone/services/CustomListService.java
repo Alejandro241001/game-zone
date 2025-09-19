@@ -29,16 +29,19 @@ public class CustomListService {
     @Autowired
     private VideoGameRepository videoGameRepository;
 
+    @Autowired
+    private CustomListMapper customListMapper; // ✅ ahora inyectamos el mapper
+
     // 1) Listado paginado
     public Page<CustomListDTO> getAllCustomLists(Pageable pageable) {
         return customListRepository.findAll(pageable)
-                .map(CustomListMapper::toDTO);
+                .map(customListMapper::toDTO); // ✅ instancia, no estático
     }
 
     // 2) Buscar por id
     public Optional<CustomListDTO> getCustomListById(Long id) {
         return customListRepository.findById(id)
-                .map(CustomListMapper::toDTO);
+                .map(customListMapper::toDTO); // ✅ instancia
     }
 
     // 3) Crear
@@ -51,7 +54,7 @@ public class CustomListService {
         entity.setUser(user);
 
         CustomList saved = customListRepository.save(entity);
-        return CustomListMapper.toDTO(saved);
+        return customListMapper.toDTO(saved); // ✅ instancia
     }
 
     // 4) Actualizar
@@ -59,7 +62,6 @@ public class CustomListService {
         CustomList existing = customListRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("La lista no existe"));
 
-        // Si envías otro userId, lo actualizamos (opcional)
         if (dto.getUserId() != null && (existing.getUser() == null
                 || !dto.getUserId().equals(existing.getUser().getId()))) {
             User user = userRepository.findById(dto.getUserId())
@@ -70,7 +72,7 @@ public class CustomListService {
         existing.setName(dto.getName());
 
         CustomList updated = customListRepository.save(existing);
-        return CustomListMapper.toDTO(updated);
+        return customListMapper.toDTO(updated); // ✅ instancia
     }
 
     // 5) Borrar
@@ -92,6 +94,6 @@ public class CustomListService {
         customList.getVideoGames().add(videoGame);
         CustomList saved = customListRepository.save(customList);
 
-        return CustomListMapper.toDTO(saved);
+        return customListMapper.toDTO(saved); // ✅ instancia
     }
 }

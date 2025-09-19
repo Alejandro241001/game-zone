@@ -45,12 +45,12 @@ public class VideoGameService {
 
     public Page<VideoGameDTO> getAllVideoGames(Pageable pageable) {
         Page<VideoGame> videogames = videoGameRepository.findAll(pageable);
-        return videogames.map(videoGameMapper::toDTOWithPlatforms);
+        return videogames.map(videoGameMapper::toDTO);
     }
 
     public Optional<VideoGameDTO> getVideoGameById(Long id) {
         return videoGameRepository.findById(id)
-                .map(videoGameMapper::toDTOWithPlatforms);
+                .map(videoGameMapper::toDTO);
     }
 
     public VideoGameDTO createVideoGame(@Valid VideoGameCreateDTO dto, Locale locale) {
@@ -78,7 +78,7 @@ public class VideoGameService {
         videoGame.setPlatforms(platforms);
 
         VideoGame savedVideoGame = videoGameRepository.save(videoGame);
-        return videoGameMapper.toDTOWithPlatforms(savedVideoGame);
+        return videoGameMapper.toDTO(savedVideoGame);
     }
 
     public VideoGameDTO updateVideoGame(Long id, @Valid VideoGameCreateDTO dto, Locale locale) {
@@ -112,7 +112,7 @@ public class VideoGameService {
         existingVideoGame.setPlatforms(platforms);
 
         VideoGame updatedVideoGame = videoGameRepository.save(existingVideoGame);
-        return videoGameMapper.toDTOWithPlatforms(updatedVideoGame);
+        return videoGameMapper.toDTO(updatedVideoGame);
     }
 
     public void deleteVideoGame(Long id) {

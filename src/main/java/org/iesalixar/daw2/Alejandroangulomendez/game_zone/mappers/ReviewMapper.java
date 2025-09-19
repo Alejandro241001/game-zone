@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 public class ReviewMapper {
 
     public ReviewDTO toDTO(Review review) {
+        if (review == null) return null;
+
         ReviewDTO dto = new ReviewDTO();
         dto.setId(review.getId());
         dto.setReviewText(review.getReviewText());
@@ -31,6 +33,8 @@ public class ReviewMapper {
     }
 
     public Review toEntity(ReviewCreateDTO dto) {
+        if (dto == null) return null;
+
         Review review = new Review();
         review.setReviewText(dto.getReviewText());
         review.setRating(dto.getRating());

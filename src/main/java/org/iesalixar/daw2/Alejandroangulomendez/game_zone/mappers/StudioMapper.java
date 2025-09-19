@@ -8,13 +8,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class StudioMapper {
 
-    /**
-     * Convierte una entidad `Studio` a un `StudioDTO` (datos básicos).
-     *
-     * @param studio Entidad de studio.
-     * @return DTO correspondiente
-     */
     public StudioDTO toDTO(Studio studio){
+        if (studio == null) return null;
         StudioDTO dto = new StudioDTO();
         dto.setId(studio.getId());
         dto.setName(studio.getName());
@@ -22,13 +17,8 @@ public class StudioMapper {
         return dto;
     }
 
-    /**
-     * Convierte un `StudioDTO` a una entidad `Studio`.
-     *
-     * @param dto DTO de studio
-     * @return Entidad Studio
-     */
     public Studio toEntity(StudioDTO dto){
+        if (dto == null) return null;
         Studio studio = new Studio();
         studio.setId(dto.getId());
         studio.setName(dto.getName());
@@ -36,13 +26,8 @@ public class StudioMapper {
         return studio;
     }
 
-    /**
-     * Convierte un `StudioCreateDTO` a una entidad `Studio` (para creación).
-     *
-     * @param createDTO DTO para crear estudios
-     * @return Entidad Studio
-     */
     public Studio toEntity(StudioCreateDTO createDTO){
+        if (createDTO == null) return null;
         Studio studio = new Studio();
         studio.setName(createDTO.getName());
         studio.setCountry(createDTO.getCountry());
