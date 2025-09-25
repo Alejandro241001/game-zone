@@ -1,9 +1,14 @@
 Game Zone
+
 Curso Escolar 2025-2026
+
 Autor: Alejandro Angulo Méndez (https://github.com/Alejandro241001)
 Tutor: Miguel Ángel Morejón
+
 Fecha de Inicio: 15-10-2025
+
 Fecha de Finalización: 1-12-2025
+
 Breve descripción del proyecto
 
 Game-Zone será una página web diseñada para los usuarios que quieran una
@@ -16,7 +21,6 @@ registrado, usuario registrado y administrador).
 
 El objetivo es crear un entorno
 funcional a la cual que sea vistoso para los usuarios. Hacer una interfaz vistosa y facil de manejar
-
 
 
     src
