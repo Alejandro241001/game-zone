@@ -17,5 +17,7 @@ Game-Zone será una página web diseñada para los usuarios que quieran una list
 El objetivo es crear un entorno funcional a la cual que sea vistoso para los usuarios y sencilla de manejar.
 
 src → Carpeta con el código fuente del proyecto.
+
 docs → Documentación del proyecto.
+
 README.md → Presentación con información básica del proyecto.
