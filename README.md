@@ -1,8 +1,9 @@
-Game Zone
+GAME ZONE
 
 Curso Escolar 2025-2026
 
 Autor: Alejandro Angulo Méndez (https://github.com/Alejandro241001)
+
 Tutor: Miguel Ángel Morejón
 
 Fecha de Inicio: 15-10-2025
