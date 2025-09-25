@@ -7,7 +7,7 @@ import lombok.*;
 import java.util.List;
 
 @Entity
-@Table(name = "studios") // Nombre de la tabla en la base de datos
+@Table(name = "studios")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -20,7 +20,7 @@ public class Studio {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private Long id; // Cambiado de Long a Integer para coincidir con INT en schema.sql
+    private Long id;
 
     @NotEmpty(message = "The studio name cannot be empty.")
     @Size(max = 100, message = "The studio name must not exceed 100 characters.")
@@ -28,14 +28,14 @@ public class Studio {
     private String name;
 
     @Size(max = 50, message = "The country name must not exceed 50 characters.")
-    @Column(name = "country", length = 50, nullable = true) // nullable=true para coincidir con schema.sql
+    @Column(name = "country", length = 50, nullable = true)
     private String country;
 
     // Relación uno a muchos: Un estudio puede tener muchos videojuegos
     @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<VideoGame> videoGames;
 
-    // Constructor adicional sin `id`
+
     public Studio(String name, String country) {
         this.name = name;
         this.country = country;

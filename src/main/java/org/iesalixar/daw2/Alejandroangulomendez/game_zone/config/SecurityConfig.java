@@ -55,11 +55,11 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(withDefaults()) // Configuración de CORS
-                .csrf(csrf -> csrf.disable()) // Las APIs REST no suelen necesitar CSRF
+                .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sin sesiones
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/videogames/**").hasAnyRole("USER", "MANAGER") // Solo USER
+                        .requestMatchers("/api/videogames/**").hasAnyRole("USER", "MANAGER")
                         .requestMatchers("/api/admin").hasRole("ADMIN") // Solo ADMIN
                         .requestMatchers(
                                 "/api/studios"
