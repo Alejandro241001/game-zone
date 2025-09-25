@@ -24,6 +24,6 @@ El objetivo es crear un entorno
 funcional a la cual que sea vistoso para los usuarios. Hacer una interfaz vistosa y facil de manejar
 
 
-    src
+    src → Carpeta con el código fuente del proyecto.
     docs
     README.md
