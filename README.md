@@ -10,7 +10,7 @@ Fecha de Inicio: 15-10-2025
 
 Fecha de Finalización: 1-12-2025
 
-Breve descripción del proyecto
+Breve descripción del proyecto:
 
 Game-Zone será una página web diseñada para los usuarios que quieran una
 lista extensa de videojuegos, crear tus propias listas con videojuegos que
