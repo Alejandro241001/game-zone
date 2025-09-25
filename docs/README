@@ -3,46 +3,60 @@ Portada
 Debe contener los siguientes elementos:
 
     Logo de la aplicación (recomendado crear uno)
-    Título del proyecto o nombre de la aplicación
-    Nombre del Alumno
-    Curso académico (20XX-20XX)
-    Ciclo Formativo
-    Curso
+    Game Zone
+    Nombre del Alumno: Alejandro Angulo Méndez
+    Curso académico (2025-2026)
+    Ciclo Formativo DAW
+    Curso 2º
 
 Índice
 
 Se deberá crear un índice que contenga un acceso directo a la página de cada contenido. Para ello se tendrá que hacer un uso correcto de los encabezados de cada sección en la herramienta de edición de textos.
 Introducción
 
-Ampiación de lo que se ha especificado en la propuesta o en las secciones Descripción del proyecto, Objetivo de la Aplicación,...
+Ampliación:
+
+Game-Zone será una página web diseñada para los usuarios que quieran una lista extensa de videojuegos, crear tus propias listas con videojuegos que hayas jugado, consultar detalles como notas de Metacritic, leer y escribir reseñas. La página ofrecerá funcionalidades como listas personalizadas, nota de cualquier videojuego que esté en la base de datos, dejar una reseña propia y puntuar el propio videojuego. El proyecto contará con tres Roles(usuario no registrado, usuario registrado y administrador). El objetivo es crear un entorno funcional a la cual que sea vistoso para los usuarios y sencillo de manejar.
+
 Identificación de las necesidades del proyecto.
 
 Listado enumerado de todas las acciones que los distintos usuarios pueden realizar en la aplicación. Ejemplo de requisitos funcionales del proyecto:
 
-    RF01. Permitir logarse a los beneficiarios y consultar los talleres disponibles, plazas, horarios, etc.
-    RF02. Los beneficiarios podrán solicitar la matriculación en alguno de los talleres.
-    RF03. Los colaboradores podrán logarse y cambiar sus características, nuevas habilidades, modificar su disponibilidad, etc
-    RF04. Remitirá correo electrónico a los beneficiarios con los datos de la reserva que han hecho.
-    RF05. Se podrán sacar listas de los alumnos de cada taller.
-    RF06. Se podrá sacar un listado de los colaboradores que pueden impartir un taller en un horario determinado.
-    RF07. Añadir nuevos talleres, modificar los existentes.
-    RF08. Imprimirá diplomas con los datos de los alumnos.
-    RF09. Permitirá enviar correos masivos con ofertas de nuevos talleres.
-    RF10. Permitirá que los alumnos valoren cada uno de los talleres.
-    RF11. Se habilitará un blog para que los usuarios puedan realizar comentarios.
-    RF12. Se generará una memoria anual de todos los talleres realizados.
-    RF13. Permitirá establecer los recursos necesarios para cada taller
-    RF14. Controlará la preferencia de asignación de talleres en función del número de veces que ya ha disfrutado del servicio.
+    RF01. El sistema deberá tener un sistema de login para usuarios registrados.
+    RF02. El sistema deberá tener un sistema de logout para cerrar sesión de forma segura.
+    RF03. El sistema deberá permitir el registro de nuevos usuarios con correo y contraseña.
+    RF04. El sistema deberá permitir editar el perfil de usuario.
+    RF05. El sistema deberá mostrar un catálogo de videojuegos con filtros (género, plataforma, año, etc.).
+    RF06. El sistema deberá permitir buscar videojuegos por título, nota en metacritic, género, etc.
+    RF07. El sistema deberá mostrar detalles de cada videojuego (descripción, nota de Metacritic, plataformas).
+    RF08. El sistema deberá permitir a los usuarios escribir reseñas de videojuegos (texto y calificación).
+    RF09. El sistema deberá permitir crear listas personalizadas a los usuarios registrados
+    RF10. El sistema deberá mostrar reseñas de otros usuarios en la página de cada videojuego.
+    RF11. El sistema deberá restringir al usuario no registrado la opción de no crear listas personalizadas
+    RF12. El sistema deberá garantizar la seguridad de los datos con cifrado y conexiones HTTPS.
+    RF13. El sistema deberá restringir al usuario no registrado puntuar videojuegos de la lista
 
 Breve análisis/comparativa con las alternativas del mercado
 
 Comparativa de herramientas similares, puntos fuertes y débiles de la aplicación web que se quiere desarrollar respecto a las existentes.
 Justificación del proyecto
 
-Motivación que justifique la realización de la aplicación web.
+Motivación:
+
+La motivación detrás de Game-Zone surge desde mi pasión por los
+videojuegos y la falta de plataformas accesibles que combinen un catálogo
+completo, reseñas y herramientas personalizadas en un solo lugar. Me di
+cuenta de que había páginas parecidas pero relacionadas con otros temas y
+características como el cine. Esto me dio la idea de ofrecer a los usuarios un
+espacio donde puedan compartir sus opiniones y puedan organizar sus
+propias listas. Además, este proyecto me permitirá aplicar y perfeccionar mis
+habilidades en desarrollo web, gestión de entornos servidor y todo lo
+aprendido durante el curso.
 Uso de stack tecnológico. Justificación del mismo.
 
-Lista de las tecnologías usadas para construir la aplicación y análisis de por qué se ha construído en estas tecnologías.
+Lista de las tecnologías:
+
+
 Esquema E-R y descripción de las entidades y campos de la base de datos.
 
 Imagen del esquema entidad relación y descricpión de las entidades y campos que conforman el modelo de datos.
