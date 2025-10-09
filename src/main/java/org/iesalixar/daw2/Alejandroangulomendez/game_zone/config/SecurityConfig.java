@@ -13,17 +13,12 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import static org.springframework.security.config.Customizer.withDefaults;
-
 
 /**
  * Configura la seguridad de la aplicación, definiendo autenticación y autorización
@@ -31,17 +26,16 @@ import static org.springframework.security.config.Customizer.withDefaults;
  */
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)  // Activa la seguridad basada en métodos
+@EnableMethodSecurity(prePostEnabled = true)  // Activa seguridad basada en anotaciones @PreAuthorize
 public class SecurityConfig {
 
-
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
+
     @Autowired
     private CustomUserDetailsService userDetailsService;
+
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-
 
     /**
      * Configura el filtro de seguridad para las solicitudes HTTP, especificando las
@@ -54,25 +48,35 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(withDefaults()) // Configuración de CORS
+                .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sin sesiones
+
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/videogames/**").hasAnyRole("USER", "MANAGER")
-                        .requestMatchers("/api/admin").hasRole("ADMIN") // Solo ADMIN
-                        .requestMatchers(
-                                "/api/studios"
-
-
-                        ).hasRole("MANAGER") // Solo MANAGER
+                        // 🟢 Endpoints públicos
                         .requestMatchers(
                                 "/api/v1/authenticate",
-                                "/api/v1/register", "/api-docs**", "/swagger-ui/**"
-                        ).permitAll() // Endpoints públicos
-                        .anyRequest().authenticated() // El resto requiere autenticación
+                                "/api/v1/register",
+                                "/api-docs**",
+                                "/swagger-ui/**"
+                        ).permitAll()
+
+                        // 👑 Panel de administración (solo ADMIN)
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // 🎮 Endpoints accesibles por USER y MANAGER
+                        .requestMatchers("/api/videogames/**").hasAnyRole("USER", "MANAGER")
+
+                        // 🏢 Endpoints exclusivos del MANAGER
+                        .requestMatchers("/api/studios/**").hasRole("MANAGER")
+
+                        // 🚫 El resto requiere autenticación
+                        .anyRequest().authenticated()
                 )
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); // Filtro JWT
+
+                // Filtro JWT antes del filtro de autenticación por usuario y contraseña
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
@@ -104,28 +108,12 @@ public class SecurityConfig {
         logger.info("Saliendo del método passwordEncoder");
         return encoder;
     }
+
     /**
-     *
-     * Configura y expone un bean de tipo {@link org.springframework.security.authentication.AuthenticationManager}.
-     *
-     * En Spring Security, el `AuthencationManager` es el componente principal que se encarga
-     * de procesar solicitudes de autenticación. Este método obtiene la instancia de
-     * `AuthenticationManager` configurada automaticamente por Srping a través de
-     * `AuthenticationConfiguration` y la expone como un bean disponible en el contexto
-     * de la aplicacion
-     *
-     * @param configuration Objeto de tipo{@link org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration} que contiene
-     *                      la configuracion de autenticacion de Spring Security. Este objeto
-     *                      incluye los detalles del flujo de autenticación configurado, como
-     *                      el proveedor de autenticación y los detalles del usuario.
-     * @return Una instancia de {@link org.springframework.security.authentication.AuthenticationManager} configurada con los detalles
-     *          especificados en la apliacion
-     * @throws Exception Si ocurre algún error al obtener el `AuthenticationManager`.
+     * Expone el AuthenticationManager como bean para su uso en otros componentes.
      */
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration)throws Exception{
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
     }
-
-
 }
