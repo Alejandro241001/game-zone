@@ -20,13 +20,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
-/**
- * Configura la seguridad de la aplicación, definiendo autenticación y autorización
- * para diferentes roles de usuario, y gestionando la política de sesiones.
- */
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(prePostEnabled = true)  // Activa seguridad basada en anotaciones @PreAuthorize
+@EnableMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
@@ -37,24 +33,15 @@ public class SecurityConfig {
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    /**
-     * Configura el filtro de seguridad para las solicitudes HTTP, especificando las
-     * rutas permitidas y los roles necesarios para acceder a diferentes endpoints.
-     *
-     * @param http instancia de {@link HttpSecurity} para configurar la seguridad.
-     * @return una instancia de {@link SecurityFilterChain} que contiene la configuración de seguridad.
-     * @throws Exception si ocurre un error en la configuración de seguridad.
-     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Sin sesiones
-
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // 🟢 Endpoints públicos
+                        // Endpoints públicos
                         .requestMatchers(
                                 "/api/v1/authenticate",
                                 "/api/v1/register",
@@ -62,31 +49,23 @@ public class SecurityConfig {
                                 "/swagger-ui/**"
                         ).permitAll()
 
-                        // 👑 Panel de administración (solo ADMIN)
+                        // Panel de administración (todos los endpoints /api/admin/**)
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
 
-                        // 🎮 Endpoints accesibles por USER y MANAGER
+                        // Endpoints accesibles por USER y MANAGER
                         .requestMatchers("/api/videogames/**").hasAnyRole("USER", "MANAGER")
 
-                        // 🏢 Endpoints exclusivos del MANAGER
+                        // Endpoints exclusivos del MANAGER
                         .requestMatchers("/api/studios/**").hasRole("MANAGER")
 
-                        // 🚫 El resto requiere autenticación
+                        // El resto requiere autenticación
                         .anyRequest().authenticated()
                 )
-
-                // Filtro JWT antes del filtro de autenticación por usuario y contraseña
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    /**
-     * Configura el proveedor de autenticación para usar el servicio de detalles de usuario
-     * personalizado y el codificador de contraseñas.
-     *
-     * @return una instancia de {@link DaoAuthenticationProvider} para la autenticación.
-     */
     @Bean
     public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
@@ -95,12 +74,6 @@ public class SecurityConfig {
         return authProvider;
     }
 
-    /**
-     * Configura el codificador de contraseñas para cifrar las contraseñas de los usuarios
-     * utilizando BCrypt.
-     *
-     * @return una instancia de {@link PasswordEncoder} que utiliza BCrypt para cifrar contraseñas.
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         logger.info("Entrando en el método passwordEncoder");
@@ -109,9 +82,6 @@ public class SecurityConfig {
         return encoder;
     }
 
-    /**
-     * Expone el AuthenticationManager como bean para su uso en otros componentes.
-     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
