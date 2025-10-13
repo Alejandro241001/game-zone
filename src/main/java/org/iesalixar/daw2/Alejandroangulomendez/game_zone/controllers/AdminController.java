@@ -29,6 +29,18 @@ public class AdminController {
         return ResponseEntity.ok(adminService.getUserById(id));
     }
 
+    // 🆕 Crear un nuevo usuario
+    @PostMapping("/users")
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        return ResponseEntity.ok(adminService.createUser(user));
+    }
+
+    // ✏️ Modificar datos de un usuario
+    @PutMapping("/users/{id}")
+    public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User updatedUser) {
+        return ResponseEntity.ok(adminService.updateUser(id, updatedUser));
+    }
+
     // 🛠️ Actualizar roles
     @PutMapping("/users/{id}/roles")
     public ResponseEntity<User> updateUserRoles(@PathVariable Long id, @RequestBody List<String> roles) {
