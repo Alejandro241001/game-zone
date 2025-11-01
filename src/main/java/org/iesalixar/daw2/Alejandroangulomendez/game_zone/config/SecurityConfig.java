@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -17,6 +18,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 import static org.springframework.security.config.Customizer.withDefaults;
 
@@ -36,29 +42,28 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(withDefaults())
+                .cors(withDefaults()) // Usa el bean corsConfigurationSource
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        // Endpoints públicos
                         .requestMatchers(
                                 "/api/v1/authenticate",
                                 "/api/v1/register",
                                 "/api-docs**",
-                                "/swagger-ui/**"
+                                "/swagger-ui/**",
+                                "/v3/api-docs/**",
+                                "/img/**",
+                                "/uploads/**"
                         ).permitAll()
-
-                        // Panel de administración (todos los endpoints /api/admin/**)
+                        .requestMatchers(HttpMethod.GET, "/api/videogames/**").permitAll()
+                        .requestMatchers(HttpMethod.PUT, "/api/videogames/**").hasAuthority("ROLE_MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/api/videogames/**").hasAuthority("ROLE_MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/videogames/**").hasAuthority("ROLE_MANAGER")
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
-
-                        // Endpoints accesibles por USER y MANAGER
-                        .requestMatchers("/api/videogames/**").hasAnyRole("USER", "MANAGER")
-
-                        // Endpoints exclusivos del MANAGER
+                        .requestMatchers(HttpMethod.GET, "/api/studios/**").permitAll()
                         .requestMatchers("/api/studios/**").hasRole("MANAGER")
-
-                        // El resto requiere autenticación
+                        .requestMatchers(HttpMethod.GET, "/api/platforms/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -85,5 +90,19 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    // ✅ CORS configurado correctamente para Spring Security
+    @Bean
+    public CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.setAllowedOrigins(List.of("http://localhost:4200")); // <-- tu frontend Angular
+        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        configuration.setAllowCredentials(true);
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
     }
 }

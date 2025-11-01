@@ -1,5 +1,6 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.mappers;
 
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.GenreDTO; // NECESARIO
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.PlatformDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.ReviewDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.StudioDTO;
@@ -26,6 +27,9 @@ public class VideoGameMapper {
         dto.setMetacritic(videoGame.getMetacritic());
         dto.setReleaseYear(videoGame.getReleaseYear());
 
+        // ✅ CORRECCIÓN: Mapeo de la nueva propiedad 'img'
+        dto.setImg(videoGame.getImg());
+
         // Studio
         if (videoGame.getStudio() != null) {
             StudioDTO studioDTO = new StudioDTO();
@@ -33,6 +37,22 @@ public class VideoGameMapper {
             studioDTO.setName(videoGame.getStudio().getName());
             dto.setStudio(studioDTO);
         }
+
+        // --- CORRECCIÓN: AÑADIR Mapeo de Genres ---
+        if (videoGame.getGenres() != null && !videoGame.getGenres().isEmpty()) {
+            List<GenreDTO> genres = videoGame.getGenres().stream()
+                    .map(genre -> {
+                        GenreDTO gDto = new GenreDTO();
+                        gDto.setId(genre.getId());
+                        gDto.setName(genre.getName());
+                        return gDto;
+                    })
+                    .collect(Collectors.toList());
+            dto.setGenres(genres);
+        } else {
+            dto.setGenres(new ArrayList<>());
+        }
+        // ------------------------------------------
 
         // Platforms
         if (videoGame.getPlatforms() != null && !videoGame.getPlatforms().isEmpty()) {
@@ -58,7 +78,6 @@ public class VideoGameMapper {
                         rDto.setReviewText(review.getReviewText());
                         rDto.setRating(review.getRating());
                         rDto.setCreatedDate(review.getCreatedDate());
-                        // Si tu ReviewDTO incluye info del usuario, puedes mapearlo aquí también
                         return rDto;
                     })
                     .collect(Collectors.toList());
@@ -78,6 +97,8 @@ public class VideoGameMapper {
         videoGame.setDescription(createDTO.getDescription());
         videoGame.setMetacritic(createDTO.getMetacritic());
         videoGame.setReleaseYear(createDTO.getReleaseYear());
+        // ✅ CORRECCIÓN: También puedes mapear 'img' aquí si el DTO de creación lo incluye
+        // videoGame.setImg(createDTO.getImg());
 
         Studio studio = new Studio();
         studio.setId(createDTO.getStudioId());

@@ -30,6 +30,7 @@ public class VideoGameCreateDTO {
     @NotNull(message = "{msg.videogame.releaseYear.notNull}")
     private Long releaseYear;
 
+    private String img;
     // NUEVO: IDs de plataformas asociadas
     private Set<Long> platformIds;
 }

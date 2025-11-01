@@ -45,6 +45,10 @@ public class VideoGame {
     @Column(name = "release_year")
     private Long releaseYear;
 
+    // ✅ CORRECCIÓN: Nueva propiedad para la URL de la imagen
+    @Column(name = "img")
+    private String img;
+
     @ManyToMany
     @JoinTable(
             name = "video_games_platforms",
@@ -120,6 +124,15 @@ public class VideoGame {
 
     public void setReleaseYear(Long releaseYear) {
         this.releaseYear = releaseYear;
+    }
+
+    // ✅ CORRECCIÓN: Getter y Setter para 'img'
+    public String getImg() {
+        return img;
+    }
+
+    public void setImg(String img) {
+        this.img = img;
     }
 
     public Set<Platform> getPlatforms() {

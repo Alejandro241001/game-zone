@@ -1,13 +1,10 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos;
 
-import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Getter
 @Setter
@@ -15,16 +12,21 @@ public class VideoGameDTO {
 
     private Long id;
 
-    @Size(max = 100, message = "The video game name must not exceed 100 characters.")
+    // Se elimina @Size porque el DTO de lectura no necesita validar el tamaño del nombre, solo lo muestra.
     private String name;
 
     private StudioDTO studio;
+
+    // CORRECCIÓN CLAVE: Tu entidad VideoGame tiene genres. El DTO debe incluirlo.
+    private List<GenreDTO> genres;
 
     private String description;
 
     private BigDecimal metacritic;
 
     private Long releaseYear;
+
+    private String img;
 
     private List<PlatformDTO> platforms;
 

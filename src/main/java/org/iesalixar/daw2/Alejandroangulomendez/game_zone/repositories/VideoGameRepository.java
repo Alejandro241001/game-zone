@@ -14,12 +14,13 @@ public interface VideoGameRepository extends JpaRepository<VideoGame, Long> {
 
     boolean existsByName(String name);
 
-    // Incluye plataformas y estudio en todas las páginas
-    @EntityGraph(attributePaths = {"platforms", "studio"})
+    // ✅ CORREGIDO: Incluye TODAS las relaciones LAZY que se mapean en el VideoGameDTO.
+    // Esto previene la LazyInitializationException para el listado principal.
+    @EntityGraph(attributePaths = {"studio", "genres", "platforms", "reviews"})
     Page<VideoGame> findAll(Pageable pageable);
 
-    // ✅ Incluye plataformas, estudio y reviews cuando buscamos por ID
-    @EntityGraph(attributePaths = {"platforms", "studio", "reviews"})
+    // ✅ Este método ya estaba bien para la vista de detalle
+    @EntityGraph(attributePaths = {"platforms", "studio", "reviews", "genres"})
     Optional<VideoGame> findById(Long id);
 
     boolean existsVideoGameByNameAndIdNot(String name, Long id);
