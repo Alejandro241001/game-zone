@@ -56,14 +56,21 @@ public class SecurityConfig {
                                 "/img/**",
                                 "/uploads/**"
                         ).permitAll()
+                        // VIDEOGAMES
                         .requestMatchers(HttpMethod.GET, "/api/videogames/**").permitAll()
-                        .requestMatchers(HttpMethod.PUT, "/api/videogames/**").hasAuthority("ROLE_MANAGER")
-                        .requestMatchers(HttpMethod.POST, "/api/videogames/**").hasAuthority("ROLE_MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/videogames/**").hasAuthority("ROLE_MANAGER")
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.GET, "/api/studios/**").permitAll()
-                        .requestMatchers("/api/studios/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/api/videogames/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/videogames/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/videogames/**").hasRole("MANAGER")
+
+                        // STUDIOS
+                        .requestMatchers(HttpMethod.GET, "/api/studios/**").permitAll()   // 👈 PRIMERO el GET
+                        .requestMatchers("/api/studios/**").hasRole("MANAGER")            // 👈 DESPUÉS los demás
+
+                        // PLATFORMS
                         .requestMatchers(HttpMethod.GET, "/api/platforms/**").permitAll()
+
+                        // ADMIN
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
