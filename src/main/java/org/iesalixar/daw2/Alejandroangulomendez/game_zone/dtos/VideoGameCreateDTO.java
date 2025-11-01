@@ -33,4 +33,6 @@ public class VideoGameCreateDTO {
     private String img;
     // NUEVO: IDs de plataformas asociadas
     private Set<Long> platformIds;
+
+    private Set<Long> genreIds;
 }

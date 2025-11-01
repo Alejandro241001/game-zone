@@ -3,10 +3,12 @@ package org.iesalixar.daw2.Alejandroangulomendez.game_zone.services;
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameCreateDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.VideoGameDTO;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.Genre;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.Platform;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.Studio;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.mappers.VideoGameMapper;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.GenreRepository;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.PlatformRepository;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.StudioRepository;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.VideoGameRepository;
@@ -18,10 +20,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @Service
 public class VideoGameService {
@@ -39,6 +38,9 @@ public class VideoGameService {
 
     @Autowired
     private PlatformRepository platformRepository;
+
+    @Autowired
+    private GenreRepository genreRepository; // 👈 NUEVO
 
     @Autowired
     private MessageSource messageSource;
@@ -66,7 +68,7 @@ public class VideoGameService {
         VideoGame videoGame = videoGameMapper.toEntity(dto);
         videoGame.setStudio(studio);
 
-        // Mapear plataformas si se proporcionan
+        // Mapear plataformas
         Set<Platform> platforms = new HashSet<>();
         if (dto.getPlatformIds() != null && !dto.getPlatformIds().isEmpty()) {
             dto.getPlatformIds().forEach(id -> {
@@ -76,6 +78,17 @@ public class VideoGameService {
             });
         }
         videoGame.setPlatforms(platforms);
+
+        // 👇 NUEVO: Mapear géneros como List<Genre>
+        List<Genre> genreList = new ArrayList<>();
+        if (dto.getGenreIds() != null && !dto.getGenreIds().isEmpty()) {
+            for (Long id : dto.getGenreIds()) {
+                Genre genre = genreRepository.findById(id)
+                        .orElseThrow(() -> new IllegalArgumentException("Género con id " + id + " no existe"));
+                genreList.add(genre);
+            }
+        }
+        videoGame.setGenres(genreList);
 
         VideoGame savedVideoGame = videoGameRepository.save(videoGame);
         return videoGameMapper.toDTO(savedVideoGame);
@@ -100,7 +113,7 @@ public class VideoGameService {
         existingVideoGame.setMetacritic(dto.getMetacritic());
         existingVideoGame.setReleaseYear(dto.getReleaseYear());
 
-        // Mapear plataformas si se proporcionan
+        // Mapear plataformas
         Set<Platform> platforms = new HashSet<>();
         if (dto.getPlatformIds() != null && !dto.getPlatformIds().isEmpty()) {
             dto.getPlatformIds().forEach(pid -> {
@@ -110,6 +123,17 @@ public class VideoGameService {
             });
         }
         existingVideoGame.setPlatforms(platforms);
+
+        // 👇 NUEVO: Mapear géneros como List<Genre>
+        List<Genre> genreList = new ArrayList<>();
+        if (dto.getGenreIds() != null && !dto.getGenreIds().isEmpty()) {
+            for (Long gid : dto.getGenreIds()) {
+                Genre genre = genreRepository.findById(gid)
+                        .orElseThrow(() -> new IllegalArgumentException("Género con id " + gid + " no existe"));
+                genreList.add(genre);
+            }
+        }
+        existingVideoGame.setGenres(genreList);
 
         VideoGame updatedVideoGame = videoGameRepository.save(existingVideoGame);
         return videoGameMapper.toDTO(updatedVideoGame);
