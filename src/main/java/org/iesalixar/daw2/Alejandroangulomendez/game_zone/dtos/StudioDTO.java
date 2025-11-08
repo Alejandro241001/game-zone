@@ -18,4 +18,8 @@ public class StudioDTO {
 
     @Size(max = 50, message = "The country name must not exceed 50 characters.")
     private String country;
+
+    // 👇 Añadir este nuevo campo
+    @Size(max = 255, message = "The image URL must not exceed 255 characters.")
+    private String img;
 }

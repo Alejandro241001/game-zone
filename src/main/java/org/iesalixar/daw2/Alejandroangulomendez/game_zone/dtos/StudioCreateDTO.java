@@ -38,4 +38,8 @@ public class StudioCreateDTO {
     @NotEmpty(message = "{msg.studio.country.notEmpty}")
     @Size(max = 50, message = "{msg.studio.country.size}")
     private String country;
+
+    // 👇 Nuevo campo opcional
+    @Size(max = 255, message = "{msg.studio.img.size}")
+    private String img;
 }

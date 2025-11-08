@@ -31,13 +31,20 @@ public class Studio {
     @Column(name = "country", length = 50, nullable = true)
     private String country;
 
+    // 👇 debajo del campo country
+    @Size(max = 255, message = "The image URL must not exceed 255 characters.")
+    @Column(name = "img", length = 255)
+    private String img;
+
     // Relación uno a muchos: Un estudio puede tener muchos videojuegos
     @OneToMany(mappedBy = "studio", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<VideoGame> videoGames;
 
 
-    public Studio(String name, String country) {
+    // ✅ Constructor extendido con imagen
+    public Studio(String name, String country, String img) {
         this.name = name;
         this.country = country;
+        this.img = img;
     }
 }

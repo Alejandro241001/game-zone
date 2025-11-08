@@ -8,29 +8,32 @@ import org.springframework.stereotype.Component;
 @Component
 public class StudioMapper {
 
-    public StudioDTO toDTO(Studio studio){
+    public StudioDTO toDTO(Studio studio) {
         if (studio == null) return null;
         StudioDTO dto = new StudioDTO();
         dto.setId(studio.getId());
         dto.setName(studio.getName());
         dto.setCountry(studio.getCountry());
+        dto.setImg(studio.getImg()); // 👈 Añadir esto
         return dto;
     }
 
-    public Studio toEntity(StudioDTO dto){
+    public Studio toEntity(StudioDTO dto) {
         if (dto == null) return null;
         Studio studio = new Studio();
         studio.setId(dto.getId());
         studio.setName(dto.getName());
         studio.setCountry(dto.getCountry());
+        studio.setImg(dto.getImg()); // 👈 Añadir esto
         return studio;
     }
 
-    public Studio toEntity(StudioCreateDTO createDTO){
+    public Studio toEntity(StudioCreateDTO createDTO) {
         if (createDTO == null) return null;
         Studio studio = new Studio();
         studio.setName(createDTO.getName());
         studio.setCountry(createDTO.getCountry());
+        studio.setImg(createDTO.getImg()); // 👈 Añadir esto
         return studio;
     }
 }

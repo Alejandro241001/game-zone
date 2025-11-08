@@ -126,7 +126,7 @@ public class VideoGame {
         this.releaseYear = releaseYear;
     }
 
-    // ✅ CORRECCIÓN: Getter y Setter para 'img'
+
     public String getImg() {
         return img;
     }

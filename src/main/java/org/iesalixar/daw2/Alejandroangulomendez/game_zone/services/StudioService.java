@@ -44,7 +44,7 @@ public class StudioService {
         }
     }
 
-    public Optional<StudioDTO> getStudioById(Integer id) { // Cambiado de Long a Integer
+    public Optional<StudioDTO> getStudioById(Long id) { // Cambiado de Long a Integer
         try {
             logger.info("Buscando estudio con ID {}", id);
             return studioRepository.findById(id).map(studioMapper::toDTO);
@@ -65,7 +65,7 @@ public class StudioService {
         return studioMapper.toDTO(savedStudio);
     }
 
-    public StudioDTO updateStudio(Integer id, @Valid StudioCreateDTO studioCreateDTO, Locale locale) { // Cambiado de Long a Integer
+    public StudioDTO updateStudio(Long id, @Valid StudioCreateDTO studioCreateDTO, Locale locale) { // Cambiado de Long a Integer
         Studio existingStudio = studioRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("El estudio no existe"));
 
@@ -80,7 +80,7 @@ public class StudioService {
         return studioMapper.toDTO(updatedStudio);
     }
 
-    public void deleteStudio(Integer id) { // Cambiado de Long a Integer
+    public void deleteStudio(Long id) { // Cambiado de Long a Integer
         if (!studioRepository.existsById(id)) {
             throw new IllegalArgumentException("El estudio no existe");
         }

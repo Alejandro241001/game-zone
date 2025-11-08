@@ -2,7 +2,8 @@
 CREATE TABLE IF NOT EXISTS studios (
     id INT AUTO_INCREMENT PRIMARY KEY,      -- ID único para el estudio
     name VARCHAR(100) NOT NULL,             -- Nombre del estudio
-    country VARCHAR(50)                     -- País del estudio
+    country VARCHAR(50),
+    img VARCHAR(255)                     -- País del estudio
 );
 
 -- Tabla para videojuegos
@@ -13,7 +14,7 @@ CREATE TABLE IF NOT EXISTS video_games (
     description TEXT,                       -- Descripción del juego
     metacritic DECIMAL(4,1),          -- Puntuación de Metacritic (ej. 85.5)
     release_year INT,
-    img VARCHAR(255),-- Año de lanzamiento
+    img VARCHAR(255),
     FOREIGN KEY (studio_id) REFERENCES studios(id) ON DELETE CASCADE
 );
 

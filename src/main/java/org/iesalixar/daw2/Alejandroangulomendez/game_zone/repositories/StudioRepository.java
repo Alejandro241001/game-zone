@@ -12,7 +12,7 @@ import java.util.Optional;
  * Repositorio para la entidad Studio que extiende JpaRepository.
  * Proporciona operaciones CRUD y consultas personalizadas para la entidad Studio.
  */
-public interface StudioRepository extends JpaRepository<Studio, Integer> {
+public interface StudioRepository extends JpaRepository<Studio, Long> {
 
     /**
      * Obtiene todos los estudios.
@@ -60,5 +60,5 @@ public interface StudioRepository extends JpaRepository<Studio, Integer> {
      * @return true si existe un estudio con el nombre especificado (excluyendo el estudio con el ID dado), false en caso contrario.
      */
     @Query("SELECT COUNT(s) > 0 FROM Studio s WHERE s.name = :name AND s.id != :id")
-    boolean existsStudioByNameAndNotId(@Param("name") String name, @Param("id") Integer id);
+    boolean existsStudioByNameAndNotId(@Param("name") String name, @Param("id") Long id);
 }

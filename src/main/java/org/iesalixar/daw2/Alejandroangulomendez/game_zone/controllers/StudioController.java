@@ -75,7 +75,7 @@ public class StudioController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @GetMapping("/{id}")
-    public ResponseEntity<StudioDTO> getStudioById(@PathVariable Integer id) { // Cambiado de Long a Integer
+    public ResponseEntity<StudioDTO> getStudioById(@PathVariable Long id) { // Cambiado de Long a Integer
         logger.info("Buscando estudio con ID {}", id);
         try {
             Optional<StudioDTO> studioDTO = studioService.getStudioById(id);
@@ -130,7 +130,7 @@ public class StudioController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateStudio(@PathVariable Integer id, @Valid @RequestBody StudioCreateDTO studioCreateDTO, Locale locale) { // Cambiado de Long a Integer
+    public ResponseEntity<?> updateStudio(@PathVariable Long id, @Valid @RequestBody StudioCreateDTO studioCreateDTO, Locale locale) { // Cambiado de Long a Integer
         try {
             StudioDTO updatedStudio = studioService.updateStudio(id, studioCreateDTO, locale);
             return ResponseEntity.ok(updatedStudio);
@@ -155,7 +155,7 @@ public class StudioController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteStudio(@PathVariable Integer id) { // Cambiado de Long a Integer
+    public ResponseEntity<?> deleteStudio(@PathVariable Long id) { // Cambiado de Long a Integer
         try {
             studioService.deleteStudio(id);
             return ResponseEntity.noContent().build();

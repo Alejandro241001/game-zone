@@ -63,8 +63,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.DELETE, "/api/videogames/**").hasRole("MANAGER")
 
                         // STUDIOS
-                        .requestMatchers(HttpMethod.GET, "/api/studios/**").permitAll()   // 👈 PRIMERO el GET
-                        .requestMatchers("/api/studios/**").hasRole("MANAGER")            // 👈 DESPUÉS los demás
+                        .requestMatchers(HttpMethod.GET, "/api/studios", "/api/studios/**").hasAnyRole("USER", "MANAGER")
+                        .requestMatchers(HttpMethod.POST, "/api/studios/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/studios/**").hasRole("MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/studios/**").hasRole("MANAGER")          // 👈 DESPUÉS los demás
 
                         // PLATFORMS
                         .requestMatchers(HttpMethod.GET, "/api/platforms/**").permitAll()
