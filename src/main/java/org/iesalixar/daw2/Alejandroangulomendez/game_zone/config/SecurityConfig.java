@@ -42,37 +42,45 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .cors(withDefaults()) // Usa el bean corsConfigurationSource
+                .cors(withDefaults())
                 .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // === ENDPOINTS PÚBLICOS ===
                         .requestMatchers(
                                 "/api/v1/authenticate",
                                 "/api/v1/register",
-                                "/api-docs**",
+                                "/api-docs/**",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/img/**",
                                 "/uploads/**"
                         ).permitAll()
-                        // VIDEOGAMES
+
+                        // === VIDEOGAMES ===
                         .requestMatchers(HttpMethod.GET, "/api/videogames/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/videogames/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/api/videogames/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/api/videogames/**").hasRole("MANAGER")
 
-                        // STUDIOS
-                        .requestMatchers(HttpMethod.GET, "/api/studios", "/api/studios/**").hasAnyRole("USER", "MANAGER")
+                        // === STUDIOS ===
+                        .requestMatchers(HttpMethod.GET, "/api/studios/**").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/studios/**").hasRole("MANAGER")
                         .requestMatchers(HttpMethod.PUT, "/api/studios/**").hasRole("MANAGER")
-                        .requestMatchers(HttpMethod.DELETE, "/api/studios/**").hasRole("MANAGER")          // 👈 DESPUÉS los demás
+                        .requestMatchers(HttpMethod.DELETE, "/api/studios/**").hasRole("MANAGER")
 
-                        // PLATFORMS
+                        // === PLATFORMS ===
                         .requestMatchers(HttpMethod.GET, "/api/platforms/**").permitAll()
 
-                        // ADMIN
+                        // === USERS ===
+                        .requestMatchers("/api/users/me", "/api/users/me/**").authenticated()
+                        .requestMatchers("/api/users/upload-image").authenticated()
+                        .requestMatchers("/api/users/change-password").authenticated()
+
+                        // === ADMIN ===
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
+
+                        // === TODO LO DEMÁS REQUIERE LOGIN ===
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
