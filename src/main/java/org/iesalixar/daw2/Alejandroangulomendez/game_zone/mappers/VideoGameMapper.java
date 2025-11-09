@@ -98,7 +98,7 @@ public class VideoGameMapper {
         videoGame.setMetacritic(createDTO.getMetacritic());
         videoGame.setReleaseYear(createDTO.getReleaseYear());
         // ✅ CORRECCIÓN: También puedes mapear 'img' aquí si el DTO de creación lo incluye
-        // videoGame.setImg(createDTO.getImg());
+         videoGame.setImg(createDTO.getImg());
 
         Studio studio = new Studio();
         studio.setId(createDTO.getStudioId());
