@@ -72,6 +72,12 @@ public class SecurityConfig {
                         // === PLATFORMS ===
                         .requestMatchers(HttpMethod.GET, "/api/platforms/**").permitAll()
 
+                        // === REVIEWS ===
+                        .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").hasRole("NORMAL")
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/**").hasRole("NORMAL")
+                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").hasRole("NORMAL")
+
                         // === USERS ===
                         .requestMatchers("/api/users/me", "/api/users/me/**").authenticated()
                         .requestMatchers("/api/users/upload-image").authenticated()

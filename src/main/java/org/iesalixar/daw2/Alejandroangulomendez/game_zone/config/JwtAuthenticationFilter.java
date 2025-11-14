@@ -36,7 +36,24 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        String path = request.getRequestURI();
+
+        // 🔹 Excluir rutas públicas y Swagger/OpenAPI
+        if (path.startsWith("/v3/api-docs") ||
+                path.startsWith("/swagger-ui") ||
+                path.startsWith("/swagger-resources") ||
+                path.startsWith("/webjars") ||
+                path.startsWith("/img") ||
+                path.startsWith("/uploads") ||
+                path.startsWith("/api/v1/register") ||
+                path.startsWith("/api/v1/authenticate")) {
+
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         final String authHeader = request.getHeader("Authorization");
+        System.out.println("🔍 [JWT-FILTER] Authorization header recibido: " + authHeader);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -44,19 +61,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         final String jwt = authHeader.substring(7);
+        System.out.println("🔍 [JWT-FILTER] Token extraído: " + jwt);
+
         final String username = jwtUtil.extractUsername(jwt);
+        System.out.println("🔍 [JWT-FILTER] Usuario en token: " + username);
 
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             var userDetails = userDetailsService.loadUserByUsername(username);
 
             if (jwtUtil.validateToken(jwt, userDetails.getUsername())) {
-
                 Claims claims = jwtUtil.extractAllClaims(jwt);
 
-                // 🔹 Logs de depuración
                 logger.info("Roles extraídos del token: {}", claims.get("roles"));
 
-                // 🔹 Convertimos cada rol a SimpleGrantedAuthority
                 List<SimpleGrantedAuthority> authorities = ((List<?>) claims.get("roles"))
                         .stream()
                         .map(Object::toString)
@@ -66,7 +83,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 logger.info("Authorities generadas: {}", authorities);
                 logger.info("Usuario '{}' autenticado con roles: {}", username, authorities);
 
-                // Crear token de autenticación y setearlo en SecurityContext
                 UsernamePasswordAuthenticationToken authToken =
                         new UsernamePasswordAuthenticationToken(userDetails, null, authorities);
 

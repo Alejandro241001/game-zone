@@ -14,8 +14,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Locale;
 
 @Service
@@ -47,36 +49,47 @@ public class ReviewService {
         return reviewMapper.toDTO(review);
     }
 
-    public ReviewDTO createReview(@Valid ReviewCreateDTO dto, Locale locale) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
+    public List<ReviewDTO> getReviewsByVideoGame(Long videoGameId) {
+        List<Review> reviews = reviewRepository.findByVideoGameId(videoGameId);
+
+        return reviews.stream()
+                .map(reviewMapper::toDTO)
+                .toList();
+    }
+
+    public ReviewDTO createReview(ReviewCreateDTO dto, Locale locale, User user) {
 
         VideoGame videoGame = videoGameRepository.findById(dto.getVideoGameId())
                 .orElseThrow(() -> new IllegalArgumentException("El videojuego no existe"));
 
-        Review review = reviewMapper.toEntity(dto);
+        Review review = new Review();
         review.setUser(user);
         review.setVideoGame(videoGame);
+        review.setReviewText(dto.getReviewText());
+        review.setRating(dto.getRating());
 
-        Review savedReview = reviewRepository.save(review);
-        return reviewMapper.toDTO(savedReview);
+        Review saved = reviewRepository.save(review);
+
+        return reviewMapper.toDTO(saved);
     }
 
     public ReviewDTO updateReview(Long id, @Valid ReviewCreateDTO dto, Locale locale) {
+        // 1. Buscar la review existente
         Review existingReview = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("La reseña no existe"));
 
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
-
+        // 2. (Opcional) si permites cambiar el videojuego asociado
         VideoGame videoGame = videoGameRepository.findById(dto.getVideoGameId())
                 .orElseThrow(() -> new IllegalArgumentException("El videojuego no existe"));
 
+        // 3. Actualizar solo los campos editables
         existingReview.setReviewText(dto.getReviewText());
         existingReview.setRating(dto.getRating());
-        existingReview.setUser(user);
-        existingReview.setVideoGame(videoGame);
+        existingReview.setVideoGame(videoGame); // si no quieres que cambie, comenta esta línea
 
+        // ❌ NO tocamos el usuario: existingReview.getUser() se mantiene
+
+        // 4. Guardar y devolver DTO
         Review updatedReview = reviewRepository.save(existingReview);
         return reviewMapper.toDTO(updatedReview);
     }

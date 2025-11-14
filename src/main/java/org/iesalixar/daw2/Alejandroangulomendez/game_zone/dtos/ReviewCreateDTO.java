@@ -9,16 +9,13 @@ import lombok.Setter;
 @Setter
 public class ReviewCreateDTO {
 
-    @NotNull(message = "{msg.review.user.notNull}")
-    private Long userId;
-
     @NotNull(message = "{msg.review.videogame.notNull}")
     private Long videoGameId;
 
     private String reviewText;
 
     @NotNull(message = "{msg.review.rating.notNull}")
-    @DecimalMin(value = "0.0", message = "{msg.review.rating.min}")
-    @DecimalMax(value = "10.0", message = "{msg.review.rating.max}")
+    @DecimalMin("0.0")
+    @DecimalMax("10.0")
     private Double rating;
 }

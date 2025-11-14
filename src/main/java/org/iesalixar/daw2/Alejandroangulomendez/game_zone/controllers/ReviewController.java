@@ -9,16 +9,22 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.ReviewCreateDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.ReviewDTO;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.User;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.UserRepository;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.services.ReviewService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Locale;
+import jakarta.servlet.http.HttpServletRequest;
+
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -27,6 +33,9 @@ public class ReviewController {
     private static final Logger logger = LoggerFactory.getLogger(ReviewController.class);
 
     private final ReviewService reviewService;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public ReviewController(ReviewService reviewService) {
         this.reviewService = reviewService;
@@ -80,6 +89,16 @@ public class ReviewController {
         }
     }
 
+    @GetMapping("/videogame/{videoGameId}")
+    public ResponseEntity<?> getReviewsByVideoGame(@PathVariable Long videoGameId) {
+        try {
+            return ResponseEntity.ok(reviewService.getReviewsByVideoGame(videoGameId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Error al obtener reviews del videojuego");
+        }
+    }
+
     /**
      * Inserta una nueva review.
      */
@@ -92,20 +111,32 @@ public class ReviewController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping
-    public ResponseEntity<?> createReview(@Valid @RequestBody ReviewCreateDTO reviewCreateDTO, Locale locale) {
-        logger.info("Insertando nueva review para videojuego {}", reviewCreateDTO.getVideoGameId());
+    public ResponseEntity<?> createReview(
+            @Valid @RequestBody ReviewCreateDTO dto,
+            Locale locale,
+            HttpServletRequest request
+    ) {
+        System.out.println("🔍 Header Authorization = " + request.getHeader("Authorization"));
+
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication == null || !authentication.isAuthenticated()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
+        }
+
+        String username = authentication.getName();
+        System.out.println("🔍 Usuario autenticado según token: " + username);
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
         try {
-            ReviewDTO saved = reviewService.createReview(reviewCreateDTO, locale);
+            ReviewDTO saved = reviewService.createReview(dto, locale, user);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Error al crear la review: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            logger.error("Error al crear la review: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la review.");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
         }
     }
-
     /**
      * Actualiza una review existente.
      */
