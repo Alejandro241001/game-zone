@@ -111,32 +111,19 @@ public class ReviewController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PostMapping
-    public ResponseEntity<?> createReview(
-            @Valid @RequestBody ReviewCreateDTO dto,
-            Locale locale,
-            HttpServletRequest request
-    ) {
-        System.out.println("🔍 Header Authorization = " + request.getHeader("Authorization"));
+    public ResponseEntity<?> createReview(@Valid @RequestBody ReviewCreateDTO dto, Locale locale) {
 
-        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        var auth = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication == null || !authentication.isAuthenticated()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("No autenticado");
-        }
-
-        String username = authentication.getName();
-        System.out.println("🔍 Usuario autenticado según token: " + username);
-
+        String username = auth.getName();
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-        try {
-            ReviewDTO saved = reviewService.createReview(dto, locale, user);
-            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
-        }
+        ReviewDTO saved = reviewService.createReview(dto, locale, user);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
     }
+
     /**
      * Actualiza una review existente.
      */
@@ -150,17 +137,19 @@ public class ReviewController {
             @ApiResponse(responseCode = "500", description = "Error interno del servidor")
     })
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateReview(@PathVariable Long id, @Valid @RequestBody ReviewCreateDTO reviewCreateDTO, Locale locale) {
-        logger.info("Actualizando review con ID {}", id);
+    public ResponseEntity<?> updateReview(@PathVariable Long id,
+                                          @Valid @RequestBody ReviewCreateDTO dto,
+                                          Locale locale) {
+
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
         try {
-            ReviewDTO updated = reviewService.updateReview(id, reviewCreateDTO, locale);
-            return ResponseEntity.ok(updated);
-        } catch (IllegalArgumentException e) {
-            logger.warn("Error al actualizar la review: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            logger.error("Error al actualizar la review con ID {}: {}", id, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la review.");
+            return ResponseEntity.ok(reviewService.updateReview(id, dto, locale, user));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
         }
     }
 
@@ -175,16 +164,15 @@ public class ReviewController {
     })
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteReview(@PathVariable Long id) {
-        logger.info("Eliminando review con ID {}", id);
-        try {
-            reviewService.deleteReview(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            logger.warn("Review no encontrada: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            logger.error("Error al eliminar la review con ID {}: {}", id, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la review.");
-        }
+
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
+
+        reviewService.deleteReview(id, user);
+
+        return ResponseEntity.noContent().build();
     }
 }

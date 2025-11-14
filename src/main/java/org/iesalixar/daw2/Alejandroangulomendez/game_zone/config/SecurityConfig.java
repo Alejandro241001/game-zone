@@ -74,9 +74,9 @@ public class SecurityConfig {
 
                         // === REVIEWS ===
                         .requestMatchers(HttpMethod.GET, "/api/reviews/**").permitAll()
-                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").hasRole("NORMAL")
-                        .requestMatchers(HttpMethod.PUT, "/api/reviews/**").hasRole("NORMAL")
-                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").hasRole("NORMAL")
+                        .requestMatchers(HttpMethod.POST, "/api/reviews/**").hasAnyRole("USER", "MANAGER")
+                        .requestMatchers(HttpMethod.PUT, "/api/reviews/**").hasAnyRole("USER", "MANAGER")
+                        .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").hasAnyRole("USER", "MANAGER")
 
                         // === USERS ===
                         .requestMatchers("/api/users/me", "/api/users/me/**").authenticated()

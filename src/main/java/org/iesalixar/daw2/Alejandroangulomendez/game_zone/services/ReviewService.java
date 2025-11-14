@@ -62,42 +62,45 @@ public class ReviewService {
         VideoGame videoGame = videoGameRepository.findById(dto.getVideoGameId())
                 .orElseThrow(() -> new IllegalArgumentException("El videojuego no existe"));
 
-        Review review = new Review();
+        Review review = reviewMapper.toEntity(dto);
         review.setUser(user);
         review.setVideoGame(videoGame);
-        review.setReviewText(dto.getReviewText());
-        review.setRating(dto.getRating());
 
         Review saved = reviewRepository.save(review);
-
         return reviewMapper.toDTO(saved);
     }
 
-    public ReviewDTO updateReview(Long id, @Valid ReviewCreateDTO dto, Locale locale) {
-        // 1. Buscar la review existente
+    public ReviewDTO updateReview(Long id, @Valid ReviewCreateDTO dto, Locale locale, User userAuthenticated) {
+
         Review existingReview = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("La reseña no existe"));
 
-        // 2. (Opcional) si permites cambiar el videojuego asociado
-        VideoGame videoGame = videoGameRepository.findById(dto.getVideoGameId())
-                .orElseThrow(() -> new IllegalArgumentException("El videojuego no existe"));
+        // 🔒 SOLO el autor puede editar
+        if (!existingReview.getUser().getId().equals(userAuthenticated.getId())) {
+            throw new SecurityException("No puedes editar una review que no es tuya");
+        }
 
-        // 3. Actualizar solo los campos editables
         existingReview.setReviewText(dto.getReviewText());
         existingReview.setRating(dto.getRating());
-        existingReview.setVideoGame(videoGame); // si no quieres que cambie, comenta esta línea
 
-        // ❌ NO tocamos el usuario: existingReview.getUser() se mantiene
-
-        // 4. Guardar y devolver DTO
         Review updatedReview = reviewRepository.save(existingReview);
         return reviewMapper.toDTO(updatedReview);
     }
 
-    public void deleteReview(Long id) {
-        if (!reviewRepository.existsById(id)) {
-            throw new IllegalArgumentException("La reseña no existe");
+    public void deleteReview(Long id, User currentUser) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("La review no existe"));
+
+        boolean isOwner = review.getUser().getId().equals(currentUser.getId());
+        boolean isManager = currentUser.getRoles().stream()
+                .anyMatch(r -> r.getName().equals("ROLE_MANAGER"));
+
+        if (!isOwner && !isManager) {
+            throw new IllegalArgumentException("No puedes borrar una review que no es tuya");
         }
-        reviewRepository.deleteById(id);
+
+        reviewRepository.delete(review);
     }
+
+
 }
