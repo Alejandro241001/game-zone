@@ -78,10 +78,19 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/api/reviews/**").hasAnyRole("USER", "MANAGER")
                         .requestMatchers(HttpMethod.DELETE, "/api/reviews/**").hasAnyRole("USER", "MANAGER")
 
+
+
                         // === USERS ===
                         .requestMatchers("/api/users/me", "/api/users/me/**").authenticated()
                         .requestMatchers("/api/users/upload-image").authenticated()
                         .requestMatchers("/api/users/change-password").authenticated()
+
+                        .requestMatchers(HttpMethod.POST, "/api/customlists").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/api/customlists/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/customlists/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/api/customlists/*/videogames/*").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/api/customlists/*/videogames/*").authenticated()
+
 
                         // === ADMIN ===
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")

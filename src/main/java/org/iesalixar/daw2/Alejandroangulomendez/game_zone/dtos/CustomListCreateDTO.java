@@ -9,8 +9,7 @@ import lombok.Setter;
 @Setter
 public class CustomListCreateDTO {
 
-    @NotNull(message = "El ID del usuario es obligatorio")
-    private Long userId;
+
 
     @NotEmpty(message = "El nombre de la lista no puede estar vacío")
     private String name;

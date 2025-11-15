@@ -1,196 +1,135 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.controllers;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.media.ArraySchema;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.CustomListCreateDTO;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.dtos.CustomListDTO;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.User;
+import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.UserRepository;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.services.CustomListService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
 
-import java.util.Locale;
-import java.util.Optional;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/customlists")
 public class CustomListController {
 
-    private static final Logger logger = LoggerFactory.getLogger(CustomListController.class);
-
     @Autowired
     private CustomListService customListService;
 
-    /**
-     * Obtiene todas las listas personalizadas con paginación.
-     *
-     * @param pageable Paginación de la solicitud.
-     * @return Página de listas.
-     */
-    @Operation(summary = "Obtener todas las listas personalizadas", description = "Devuelve una lista paginada de todas las listas creadas por usuarios")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Listas recuperadas exitosamente",
-                    content = @Content(mediaType = "application/json",
-                            array = @ArraySchema(schema = @Schema(implementation = CustomListDTO.class)))),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
-    @GetMapping
-    public ResponseEntity<Page<CustomListDTO>> getAllCustomLists(@PageableDefault(size = 10, sort = "name") Pageable pageable) {
-        try {
-            Page<CustomListDTO> customLists = customListService.getAllCustomLists(pageable);
-            return ResponseEntity.ok(customLists);
-        } catch (Exception e) {
-            logger.error("Error al obtener las listas personalizadas: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
+    @Autowired
+    private UserRepository userRepository;
 
-    /**
-     * Obtiene una lista personalizada por su ID.
-     *
-     * @param id Id de la lista.
-     * @return Lista encontrada.
-     */
-    @Operation(summary = "Obtener una lista personalizada por ID", description = "Recupera una lista personalizada según su identificador único")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista encontrada",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomListDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Lista no encontrada"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
-    @GetMapping("/{id}")
-    public ResponseEntity<CustomListDTO> getCustomListById(@PathVariable Long id) {
-        try {
-            Optional<CustomListDTO> customList = customListService.getCustomListById(id);
-            return customList.map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).body(null));
-        } catch (Exception e) {
-            logger.error("Error al obtener la lista personalizada con ID {}: {}", id, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
-        }
-    }
-
-    /**
-     * Crea una nueva lista personalizada.
-     *
-     * @param customListCreateDTO Datos para crear la lista.
-     * @param locale Idioma para los mensajes de error.
-     * @return Lista creada.
-     */
-    @Operation(summary = "Crear una nueva lista personalizada", description = "Permite que un usuario cree una nueva lista personalizada")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", description = "Lista creada exitosamente",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomListDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos proporcionados"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
+    // CREATE
     @PostMapping
-    public ResponseEntity<?> createCustomList(@Valid @RequestBody CustomListCreateDTO customListCreateDTO, Locale locale) {
+    public ResponseEntity<?> createCustomList(@Valid @RequestBody CustomListCreateDTO dto) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow();
+
         try {
-            CustomListDTO createdList = customListService.createCustomList(customListCreateDTO);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdList);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .body(customListService.createCustomList(dto, user));
         } catch (Exception e) {
-            logger.error("Error al crear la lista personalizada: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al crear la lista personalizada");
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
-    /**
-     * Actualiza una lista personalizada existente.
-     *
-     * @param id ID de la lista a actualizar.
-     * @param customListCreateDTO Datos de actualización.
-     * @param locale Idioma para los mensajes de error.
-     * @return Lista actualizada.
-     */
-    @Operation(summary = "Actualizar una lista personalizada", description = "Permite actualizar los datos de una lista existente")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Lista actualizada exitosamente",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomListDTO.class))),
-            @ApiResponse(responseCode = "400", description = "Datos inválidos"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
+    @GetMapping
+    public ResponseEntity<?> getMyLists() {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow();
+
+        return ResponseEntity.ok(customListService.getListsByUser(user));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getListById(@PathVariable Long id) {
+
+        return customListService.getCustomListById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    // UPDATE
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateCustomList(@PathVariable Long id, @Valid @RequestBody CustomListCreateDTO customListCreateDTO, Locale locale) {
-        try {
-            CustomListDTO updatedList = customListService.updateCustomList(id, customListCreateDTO);
-            return ResponseEntity.ok(updatedList);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            logger.error("Error al actualizar la lista con ID {}: {}", id, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al actualizar la lista personalizada");
-        }
-    }
+    public ResponseEntity<?> updateCustomList(
+            @PathVariable Long id,
+            @Valid @RequestBody CustomListCreateDTO dto) {
 
-    /**
-     * Elimina una lista personalizada por su ID.
-     *
-     * @param id ID de la lista a eliminar.
-     * @return Resultado de la operación.
-     */
-    @Operation(summary = "Eliminar una lista personalizada", description = "Permite eliminar una lista específica de la base de datos")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Lista eliminada exitosamente"),
-            @ApiResponse(responseCode = "404", description = "Lista no encontrada"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteCustomList(@PathVariable Long id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow();
+
         try {
-            customListService.deleteCustomList(id);
-            return ResponseEntity.noContent().build();
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        } catch (Exception e) {
-            logger.error("Error al eliminar la lista con ID {}: {}", id, e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al eliminar la lista personalizada");
-        }
-    }
-    /**
-     * Añade un videojuego a una lista personalizada existente.
-     *
-     * @param listId ID de la lista.
-     * @param videoGameId ID del videojuego.
-     * @return Lista actualizada.
-     */
-    @Operation(summary = "Añadir un videojuego a una lista personalizada", description = "Permite agregar un videojuego a una lista existente")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Videojuego añadido exitosamente",
-                    content = @Content(mediaType = "application/json",
-                            schema = @Schema(implementation = CustomListDTO.class))),
-            @ApiResponse(responseCode = "404", description = "Lista o videojuego no encontrado"),
-            @ApiResponse(responseCode = "403", description = "Acceso denegado"),
-            @ApiResponse(responseCode = "500", description = "Error interno del servidor")
-    })
-    @PostMapping("/{listId}/videogames/{videoGameId}")
-    public ResponseEntity<?> addVideoGameToCustomList(@PathVariable Long listId, @PathVariable Long videoGameId) {
-        try {
-            CustomListDTO updatedList = customListService.addVideoGameToList(listId, videoGameId);
-            return ResponseEntity.ok(updatedList);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+            return ResponseEntity.ok(customListService.updateCustomList(id, dto, user));
         } catch (SecurityException e) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
-        } catch (Exception e) {
-            logger.error("Error al añadir el videojuego a la lista personalizada: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error al añadir el videojuego a la lista");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    // DELETE
+    @DeleteMapping("/{id}")
+    public ResponseEntity<?> deleteCustomList(@PathVariable Long id) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow();
+
+        try {
+            customListService.deleteCustomList(id, user);
+            return ResponseEntity.noContent().build();
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    // ADD GAME
+    @PostMapping("/{listId}/videogames/{videoGameId}")
+    public ResponseEntity<?> addGame(
+            @PathVariable Long listId,
+            @PathVariable Long videoGameId) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow();
+
+        try {
+            return ResponseEntity.ok(customListService.addVideoGameToList(listId, videoGameId, user));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+    }
+
+    // REMOVE GAME
+    @DeleteMapping("/{listId}/videogames/{videoGameId}")
+    public ResponseEntity<?> removeGame(
+            @PathVariable Long listId,
+            @PathVariable Long videoGameId) {
+
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findByUsername(username)
+                .orElseThrow();
+
+        try {
+            return ResponseEntity.ok(customListService.removeVideoGameFromList(listId, videoGameId, user));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
     }
 }

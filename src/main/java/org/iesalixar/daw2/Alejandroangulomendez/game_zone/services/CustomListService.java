@@ -8,13 +8,14 @@ import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.User;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities.VideoGame;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.mappers.CustomListMapper;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.CustomListRepository;
-import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.UserRepository;
 import org.iesalixar.daw2.Alejandroangulomendez.game_zone.repositories.VideoGameRepository;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -24,76 +25,116 @@ public class CustomListService {
     private CustomListRepository customListRepository;
 
     @Autowired
-    private UserRepository userRepository;
-
-    @Autowired
     private VideoGameRepository videoGameRepository;
 
     @Autowired
-    private CustomListMapper customListMapper; // ✅ ahora inyectamos el mapper
+    private CustomListMapper customListMapper;
 
-    // 1) Listado paginado
+    // =========================
+    // GET ALL
+    // =========================
     public Page<CustomListDTO> getAllCustomLists(Pageable pageable) {
         return customListRepository.findAll(pageable)
-                .map(customListMapper::toDTO); // ✅ instancia, no estático
+                .map(customListMapper::toDTO);
     }
 
-    // 2) Buscar por id
+    public List<CustomListDTO> getListsByUser(User user) {
+        return customListRepository.findByUser(user)
+                .stream()
+                .map(customListMapper::toDTO)
+                .toList();
+    }
+
     public Optional<CustomListDTO> getCustomListById(Long id) {
         return customListRepository.findById(id)
-                .map(customListMapper::toDTO); // ✅ instancia
+                .map(customListMapper::toDTO);
     }
 
-    // 3) Crear
-    public CustomListDTO createCustomList(@Valid CustomListCreateDTO dto) {
-        User user = userRepository.findById(dto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
+    // =========================
+    // CREATE (IGNORA dto.userId)
+    // =========================
+    public CustomListDTO createCustomList(CustomListCreateDTO dto, User authUser) {
 
-        CustomList entity = new CustomList();
-        entity.setName(dto.getName());
-        entity.setUser(user);
+        CustomList list = new CustomList();
+        list.setName(dto.getName());
+        list.setUser(authUser);
 
-        CustomList saved = customListRepository.save(entity);
-        return customListMapper.toDTO(saved); // ✅ instancia
+        return customListMapper.toDTO(customListRepository.save(list));
     }
 
-    // 4) Actualizar
-    public CustomListDTO updateCustomList(Long id, @Valid CustomListCreateDTO dto) {
-        CustomList existing = customListRepository.findById(id)
+
+    // =========================
+    // UPDATE (solo dueño)
+    // =========================
+    public CustomListDTO updateCustomList(Long id, @Valid CustomListCreateDTO dto, User authUser) {
+
+        CustomList list = customListRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("La lista no existe"));
 
-        if (dto.getUserId() != null && (existing.getUser() == null
-                || !dto.getUserId().equals(existing.getUser().getId()))) {
-            User user = userRepository.findById(dto.getUserId())
-                    .orElseThrow(() -> new IllegalArgumentException("El usuario no existe"));
-            existing.setUser(user);
+        if (!list.getUser().getId().equals(authUser.getId())) {
+            throw new SecurityException("No puedes editar una lista que no es tuya");
         }
 
-        existing.setName(dto.getName());
+        list.setName(dto.getName());
 
-        CustomList updated = customListRepository.save(existing);
-        return customListMapper.toDTO(updated); // ✅ instancia
+        CustomList updated = customListRepository.save(list);
+        return customListMapper.toDTO(updated);
     }
 
-    // 5) Borrar
-    public void deleteCustomList(Long id) {
-        if (!customListRepository.existsById(id)) {
-            throw new IllegalArgumentException("La lista no existe");
-        }
-        customListRepository.deleteById(id);
-    }
+    // =========================
+    // DELETE (solo dueño)
+    // =========================
+    public void deleteCustomList(Long id, User authUser) {
 
-    // 6) Añadir un videojuego a una lista personalizada
-    public CustomListDTO addVideoGameToList(Long listId, Long videoGameId) {
-        CustomList customList = customListRepository.findById(listId)
+        CustomList list = customListRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("La lista no existe"));
 
-        VideoGame videoGame = videoGameRepository.findById(videoGameId)
+        if (!list.getUser().getId().equals(authUser.getId())) {
+            throw new SecurityException("No puedes borrar esta lista");
+        }
+
+        customListRepository.delete(list);
+    }
+
+    // =========================
+    // ADD GAME (solo dueño)
+    // =========================
+    public CustomListDTO addVideoGameToList(Long listId, Long videoGameId, User authUser) {
+
+        CustomList list = customListRepository.findById(listId)
+                .orElseThrow(() -> new IllegalArgumentException("La lista no existe"));
+
+        if (!list.getUser().getId().equals(authUser.getId())) {
+            throw new SecurityException("No puedes modificar esta lista");
+        }
+
+        VideoGame game = videoGameRepository.findById(videoGameId)
                 .orElseThrow(() -> new IllegalArgumentException("El videojuego no existe"));
 
-        customList.getVideoGames().add(videoGame);
-        CustomList saved = customListRepository.save(customList);
+        list.getVideoGames().add(game);
 
-        return customListMapper.toDTO(saved); // ✅ instancia
+        CustomList saved = customListRepository.save(list);
+        return customListMapper.toDTO(saved);
+    }
+
+    // =========================
+    // REMOVE GAME (solo dueño)
+    // =========================
+    public CustomListDTO removeVideoGameFromList(Long listId, Long videoGameId, User authUser) {
+
+        CustomList list = customListRepository.findById(listId)
+                .orElseThrow(() -> new IllegalArgumentException("La lista no existe"));
+
+        if (!list.getUser().getId().equals(authUser.getId())) {
+            throw new SecurityException("No puedes modificar esta lista");
+        }
+
+        VideoGame game = videoGameRepository.findById(videoGameId)
+                .orElseThrow(() -> new IllegalArgumentException("El videojuego no existe"));
+
+        list.getVideoGames().remove(game);
+
+        CustomList saved = customListRepository.save(list);
+        return customListMapper.toDTO(saved);
     }
 }
