@@ -59,6 +59,12 @@ public class ReviewService {
 
     public ReviewDTO createReview(ReviewCreateDTO dto, Locale locale, User user) {
 
+        // 1️⃣ Verificar si ya existe review de ese usuario para ese videojuego
+        if (reviewRepository.existsByUserIdAndVideoGameId(user.getId(), dto.getVideoGameId())) {
+            throw new IllegalStateException("Ya has creado una review para este videojuego.");
+        }
+
+        // 2️⃣ Verificar que el videojuego existe
         VideoGame videoGame = videoGameRepository.findById(dto.getVideoGameId())
                 .orElseThrow(() -> new IllegalArgumentException("El videojuego no existe"));
 

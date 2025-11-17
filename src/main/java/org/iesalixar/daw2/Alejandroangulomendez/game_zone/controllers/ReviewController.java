@@ -119,9 +119,13 @@ public class ReviewController {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new IllegalArgumentException("Usuario no encontrado"));
 
-        ReviewDTO saved = reviewService.createReview(dto, locale, user);
+        try {
+            ReviewDTO saved = reviewService.createReview(dto, locale, user);
+            return ResponseEntity.status(HttpStatus.CREATED).body(saved);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body(saved);
+        } catch (IllegalStateException e) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+        }
     }
 
     /**
