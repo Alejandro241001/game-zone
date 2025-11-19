@@ -1,14 +1,20 @@
 package org.iesalixar.daw2.Alejandroangulomendez.game_zone.entities;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
+
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "custom_lists")
 public class CustomList {
 
+    // --- Getters y Setters ---
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -39,47 +45,6 @@ public class CustomList {
     public CustomList(User user, String name) {
         this.user = user;
         this.name = name;
-    }
-
-    // --- Getters y Setters ---
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocalDateTime getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(LocalDateTime createdDate) {
-        this.createdDate = createdDate;
-    }
-
-    public Set<VideoGame> getVideoGames() {
-        return videoGames;
-    }
-
-    public void setVideoGames(Set<VideoGame> videoGames) {
-        this.videoGames = videoGames;
     }
 
     // --- Métodos auxiliares para manejar la relación ---
