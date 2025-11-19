@@ -1,26 +1,25 @@
-# 1) Imagen base con Java 17 (la que usa Maven/Spring Boot por defecto)
-FROM eclipse-temurin:17-jdk-alpine AS build
+# Etapa de build: Java 21
+FROM eclipse-temurin:21-jdk-alpine AS build
 
 WORKDIR /app
 
-# Copiar todo el proyecto
+# Copiamos todo el proyecto
 COPY . .
 
-# Dar permiso de ejecución al maven wrapper
+# Damos permisos al Maven Wrapper
 RUN chmod +x mvnw
 
-# Descargar dependencias y construir el JAR
+# Compilamos el proyecto
 RUN ./mvnw clean package -DskipTests
 
-# 2) Segunda etapa: imagen final más ligera
-FROM eclipse-temurin:17-jdk-alpine
+# Imagen final (runtime)
+FROM eclipse-temurin:21-jdk-alpine
 
 WORKDIR /app
 
-# Copiar el JAR construido en la etapa anterior
+# Copiamos el JAR desde la etapa de build
 COPY --from=build /app/target/*.jar app.jar
 
 EXPOSE 8080
 
-# Ejecutar el jar
-ENTRYPOINT ["java","-jar","app.jar"]
+ENTRYPOINT ["java", "-jar", "app.jar"]
